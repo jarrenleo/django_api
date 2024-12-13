@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link
+    href="https://fonts.googleapis.com/css2?family=Inter:ital,opsz,wght@0,14..32,100..900;1,14..32,100..900&display=swap"
+    rel="stylesheet"
+  />
+  <head>
+    <title>Games API Documentation</title>
+    <style>
+      * {
+        font-family: "Inter", sans-serif;
+        line-height: 1.5;
+      }
+
+      table {
+        width: 100%;
+        border-collapse: collapse;
+        margin: 20px 0;
+      }
+
+      th,
+      td {
+        padding: 12px;
+        text-align: left;
+        border: 1px solid #ddd;
+      }
+
+      th {
+        background-color: #f4f4f4;
+      }
+
+      tr:hover {
+        background-color: #f9f9f9;
+      }
+
+      .container {
+        max-width: 1200px;
+        margin: 0 auto;
+        padding: 20px;
+      }
+
+      h1 {
+        color: #333;
+        margin-bottom: 30px;
+      }
+
+      .query-params {
+        font-size: 0.9em;
+        color: #666;
+        margin-top: 4px;
+      }
+
+      code {
+        background: #f8f8f8;
+        padding: 2px 4px;
+        border-radius: 3px;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container">
+      <h1>Games API Documentation</h1>
+      <table>
+        <thead>
+          <tr>
+            <th>Endpoint</th>
+            <th>Method</th>
+            <th>Description</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>
+              /api/game/
+              <div class="query-params">
+                Query params (one required):
+                <br />
+                <code>id</code>: Game ID
+                <br />
+                <code>name</code>: Game name
+              </div>
+            </td>
+            <td>GET</td>
+            <td>
+              Retrieve a single game by ID or name
+              <br />
+              <br />
+              Example: <code>/api/game/?id=123</code> or
+              <code>/api/game/?name=Elden Ring</code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              /api/games/
+              <div class="query-params">
+                Query params (all optional):
+                <br />
+                <code>filterBy</code>(supports multiple filters):
+                <br />
+                - <code>genre(Action,RPG)</code>
+                <br />
+                - <code>platform(windows,mac,linux)</code>
+                <br />
+                - <code>year(2021,2022)</code>
+                <br />
+                <code>sortBy</code>(one of):
+                <br />
+                - <code>metacriticScore</code>
+                <br />
+                - <code>price</code>
+                <br />
+                - <code>releaseDate</code>
+                <br />
+                <code>sortOrder</code>(default: desc):
+                <br />
+                - <code>asc</code>
+                <br />
+                - <code>desc</code>
+                <br />
+                <code>page</code>: Page number
+                <br />
+                <code>pageSize</code>: Items per page (max: 100)
+              </div>
+            </td>
+            <td>GET</td>
+            <td>
+              Get a paginated list of games with filtering and sorting
+              <br />
+              <br />
+              Example:
+              <code
+                >/api/games/?filterBy=genre(Action,RPG)&platform(windows)&sortBy=metacriticScore</code
+              >
+            </td>
+          </tr>
+          <tr>
+            <td>
+              /api/games/recommend/
+              <div class="query-params">
+                Query params (one required):
+                <br />
+                <code>id</code>: Reference game ID
+                <br />
+                <code>name</code>: Reference game name
+              </div>
+            </td>
+            <td>GET</td>
+            <td>
+              Get 5 game recommendations based on a reference game:
+              <br />
+              <br />
+              Example: <code>/api/game/recommend/?id=123</code> or
+              <code>/api/game/recommend/?name=Elden Ring</code>
+            </td>
+          </tr>
+          <tr>
+            <td>
+              /api/games/create/
+              <div class="query-params">
+                Request body:
+                <br />
+                <code>name</code>: string (required)
+                <br />
+                Optional fields:
+                <br />
+                <code>release_date</code>: YYYY-MM-DD
+                <br />
+                <code>price</code>: decimal
+                <br />
+                <code>genres, tags, categories</code>: comma-separated strings
+                <br />
+                <code>developers, publishers</code>: comma-separated strings
+                <br />
+                <code>windows, mac, linux</code>: boolean
+                <br />
+                ... and all other fields from the model
+              </div>
+            </td>
+            <td>POST</td>
+            <td>Create a new game entry</td>
+          </tr>
+          <tr>
+            <td>/api/games/update/{id}/</td>
+            <td>PUT/PATCH</td>
+            <td>
+              Update an existing game
+              <br />
+              Supports partial updates with PATCH
+            </td>
+          </tr>
+          <tr>
+            <td>/api/games/delete/{id}/</td>
+            <td>DELETE</td>
+            <td>
+              Delete a game
+              <br />
+              <br />
+              Example: <code>/api/games/123/delete/</code>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </body>
+</html>
