@@ -5,6 +5,14 @@ from rest_framework import status
 from django.db.models import Q
 from .models import Game
 from .serializers import GameSerializer
+from .schema import (
+    get_game_schema,
+    get_games_schema,
+    get_recommended_games_schema,
+    create_game_schema,
+    update_game_schema,
+    delete_game_schema,
+)
 
 """
 Retrieve a single game by ID or name.
@@ -24,6 +32,7 @@ Returns:
 """
 
 
+@get_game_schema()
 @api_view(["GET"])
 def get_game(request):
     pk = request.query_params.get("id")
@@ -85,6 +94,7 @@ class StandardResultsSetPagination(PageNumberPagination):
     max_page_size = 100
 
 
+@get_games_schema()
 @api_view(["GET"])
 def get_games(request):
     paginator = StandardResultsSetPagination()
@@ -195,6 +205,7 @@ Similarity scoring:
 """
 
 
+@get_recommended_games_schema()
 @api_view(["GET"])
 def get_recommended_games(request):
     pk = request.query_params.get("id")
@@ -276,7 +287,7 @@ def get_recommended_games(request):
         return Response(
             {
                 "reference_game": serializer_reference_game.data,
-                "similar_games": serializer_similar_games.data,
+                "recommended_games": serializer_similar_games.data,
             },
             status=status.HTTP_200_OK,
         )
@@ -339,6 +350,7 @@ Returns:
 """
 
 
+@create_game_schema()
 @api_view(["POST"])
 def create_game(request):
     serializer = GameSerializer(data=request.data)
@@ -353,13 +365,16 @@ def create_game(request):
 """
 Update an existing game by ID.
 
-Path parameters:
-- pk: Game ID
+Parameters:
+    request: HTTP request object
+        Query Parameters:
+            id (optional): The unique identifier of the game
+            name (optional): The name of the game to search for
 
 Request body:
 {
-    "name": "string",  # Optional for PATCH
-    "genres": "string", # Optional for PATCH
+    "name": "string",  
+    "genres": "string",
     ...other game fields
 }
 
@@ -369,9 +384,30 @@ Returns:
 """
 
 
-@api_view(["PUT", "PATCH"])
-def update_game(request, pk):
-    game = Game.objects.get(pk=pk)
+@update_game_schema()
+@api_view(["PATCH"])
+def update_game(request):
+    pk = request.query_params.get("id")
+    name = request.query_params.get("name")
+
+    if not pk and not name:
+        return Response(
+            {"message": "Please provide either id or name parameter"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        if pk:
+            game = Game.objects.get(pk=pk)
+        else:
+            game = Game.objects.filter(name__icontains=name).first()
+            if not game:
+                raise Game.DoesNotExist
+    except Game.DoesNotExist:
+        return Response(
+            {"message": "Game does not exist"}, status=status.HTTP_404_NOT_FOUND
+        )
+
     serializer = GameSerializer(game, data=request.data, partial=True)
 
     if serializer.is_valid():
@@ -384,8 +420,11 @@ def update_game(request, pk):
 """
 Delete a game by ID.
 
-Path parameters:
-- pk: Game ID
+Parameters:
+    request: HTTP request object
+        Query Parameters:
+            id (optional): The unique identifier of the game
+            name (optional): The name of the game to search for
 
 Returns:
 - 204: Game successfully deleted
@@ -393,10 +432,25 @@ Returns:
 """
 
 
+@delete_game_schema()
 @api_view(["DELETE"])
-def delete_game(request, pk):
+def delete_game(request):
+    pk = request.query_params.get("id")
+    name = request.query_params.get("name")
+
+    if not pk and not name:
+        return Response(
+            {"message": "Please provide either id or name parameter"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
     try:
-        game = Game.objects.get(pk=pk)
+        if pk:
+            game = Game.objects.get(pk=pk)
+        else:
+            game = Game.objects.filter(name__icontains=name).first()
+            if not game:
+                raise Game.DoesNotExist
     except Game.DoesNotExist:
         return Response(
             {"message": "Game does not exist"}, status=status.HTTP_404_NOT_FOUND

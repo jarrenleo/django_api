@@ -3,74 +3,120 @@ import csv
 from datetime import datetime
 from api.models import Game
 
+"""
+Django management command to import game data from a CSV file into the database.
+
+This command reads a CSV file containing game information and creates Game model
+instances for each row. It handles data validation and type conversion for various
+fields including dates, boolean values, and nullable numeric fields.
+
+Usage:
+    python manage.py import_data /data/data.csv
+
+The CSV file should contain columns matching the Game model fields, including:
+- Name: Game title (required)
+- Release date: Game release date in format 'MMM DD, YYYY' or 'MMM YYYY'
+- Estimated owners: Estimated number of game owners
+- Peak CCU: Peak concurrent users
+- Required age: Minimum required age to play
+- Price: Game price (converted to float)
+- And other fields matching the Game model...
+"""
+
+
 class Command(BaseCommand):
-    help = 'Import games from CSV file'
+    help = "Import games from CSV file"
 
     def add_arguments(self, parser):
-        parser.add_argument('game_csv', type=str, help='Path to the game CSV file')
+        """Add command line arguments"""
+        parser.add_argument("game_csv", type=str, help="Path to the game CSV file")
+
+        """
+        Execute the command to import game data from the CSV file.
+
+        Args:
+            game_csv: Path to the CSV file containing game data
+
+        The method will:
+        1. Open and read the CSV file
+        2. Process each row, converting data types as needed
+        3. Create Game instances in the database
+        4. Handle and report any errors during import
+        """
 
     def handle(self, *args, **options):
-        game_csv = options['game_csv']
-        
-        with open(game_csv, 'r', encoding='utf-8') as file:
+        game_csv = options["game_csv"]
+
+        with open(game_csv, "r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
-            
+
             for row in reader:
                 try:
+                    # Parse release date handling two possible formats
                     try:
-                        release_date = datetime.strptime(row['Release date'], '%b %d, %Y').strftime('%Y-%m-%d')
+                        release_date = datetime.strptime(
+                            row["Release date"], "%b %d, %Y"
+                        ).strftime("%Y-%m-%d")
                     except ValueError:
-                        release_date = datetime.strptime(row['Release date'], '%b %Y').strftime('%Y-%m-1')
-                    
-                    windows = row['Windows'].lower() == 'true'
-                    mac = row['Mac'].lower() == 'true'
-                    linux = row['Linux'].lower() == 'true'
-                    
+                        release_date = datetime.strptime(
+                            row["Release date"], "%b %Y"
+                        ).strftime("%Y-%m-1")
+
+                    # Convert platform availability to boolean
+                    windows = row["Windows"].lower() == "true"
+                    mac = row["Mac"].lower() == "true"
+                    linux = row["Linux"].lower() == "true"
+
+                    # Create Game instance with all fields from CSV
                     Game.objects.create(
-                        name=row['Name'],
+                        name=row["Name"],
                         release_date=release_date,
-                        estimated_owners=row['Estimated owners'],
-                        peak_ccu=row['Peak CCU'],
-                        required_age=row['Required age'],
-                        price=float(row['Price']) if row['Price'] else 0.0,
-                        dlc_count=row['DLC count'],
-                        about_the_game=row['About the game'],
-                        supported_languages=row['Supported languages'],
-                        full_audio_languages=row['Full audio languages'],
-                        reviews=row['Reviews'],
-                        header_image=row['Header image'],
-                        website=row['Website'],
-                        support_url=row['Support url'],
-                        support_email=row['Support email'],
+                        estimated_owners=row["Estimated owners"],
+                        peak_ccu=row["Peak CCU"],
+                        required_age=row["Required age"],
+                        price=float(row["Price"]) if row["Price"] else 0.0,
+                        dlc_count=row["DLC count"],
+                        about_the_game=row["About the game"],
+                        supported_languages=row["Supported languages"],
+                        full_audio_languages=row["Full audio languages"],
+                        reviews=row["Reviews"],
+                        header_image=row["Header image"],
+                        website=row["Website"],
+                        support_url=row["Support url"],
+                        support_email=row["Support email"],
                         windows=windows,
                         mac=mac,
                         linux=linux,
-                        metacritic_score=row['Metacritic score'] or None,
-                        metacritic_url=row['Metacritic url'],
-                        user_score=row['User score'] or None,
-                        positive=row['Positive'] or None,
-                        negative=row['Negative'] or None,
-                        achievements=row['Achievements'] or None,
-                        recommendations=row['Recommendations'] or None,
-                        notes=row['Notes'],
-                        average_playtime_forever=row['Average playtime forever'] or None,
-                        average_playtime_two_weeks=row['Average playtime two weeks'] or None,
-                        median_playtime_forever=row['Median playtime forever'] or None,
-                        median_playtime_two_weeks=row['Median playtime two weeks'] or None,
-                        developers=row['Developers'],
-                        publishers=row['Publishers'],
-                        categories=row['Categories'],
-                        genres=row['Genres'],
-                        tags=row['Tags'],
-                        screenshots=row['Screenshots'],
-                        movies=row['Movies']
+                        metacritic_score=row["Metacritic score"] or None,
+                        metacritic_url=row["Metacritic url"],
+                        user_score=row["User score"] or None,
+                        positive=row["Positive"] or None,
+                        negative=row["Negative"] or None,
+                        achievements=row["Achievements"] or None,
+                        recommendations=row["Recommendations"] or None,
+                        notes=row["Notes"],
+                        average_playtime_forever=row["Average playtime forever"]
+                        or None,
+                        average_playtime_two_weeks=row["Average playtime two weeks"]
+                        or None,
+                        median_playtime_forever=row["Median playtime forever"] or None,
+                        median_playtime_two_weeks=row["Median playtime two weeks"]
+                        or None,
+                        developers=row["Developers"],
+                        publishers=row["Publishers"],
+                        categories=row["Categories"],
+                        genres=row["Genres"],
+                        tags=row["Tags"],
+                        screenshots=row["Screenshots"],
+                        movies=row["Movies"],
                     )
                 except Exception as e:
+                    # Log any errors during import
                     self.stdout.write(
-                        self.style.ERROR(f'Error importing game {row["Name"]}: {str(e)}')
+                        self.style.ERROR(
+                            f'Error importing game {row["Name"]}: {str(e)}'
+                        )
                     )
                     continue
 
-            self.stdout.write(
-                self.style.SUCCESS('Successfully imported games data')
-            )
+            self.stdout.write(self.style.SUCCESS("Successfully imported games data"))
