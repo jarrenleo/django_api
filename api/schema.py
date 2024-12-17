@@ -226,7 +226,7 @@ def get_games_schema():
                         }
                     ]
                 },
-                schema=GameSerializer(many=True),
+                schema=GameSerializer(),
             ),
             400: openapi.Response(
                 description="Bad Request",
@@ -371,7 +371,7 @@ def get_recommended_games_schema():
                         ],
                     }
                 },
-                schema=GameSerializer(many=True),
+                schema=GameSerializer(),
             ),
             400: openapi.Response(
                 description="Bad Request - Neither id nor name provided",
@@ -466,7 +466,7 @@ def create_game_schema():
                 "full_audio_languages": openapi.Schema(
                     type=openapi.TYPE_STRING, example="['English']"
                 ),
-                "reviews": openapi.Schema(type=openapi.TYPE_STRING, example=None),
+                "reviews": openapi.Schema(type=openapi.TYPE_STRING, example="-"),
                 "header_image": openapi.Schema(
                     type=openapi.TYPE_STRING,
                     example="https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg?t=1654259241",
@@ -498,9 +498,9 @@ def create_game_schema():
                 "negative": openapi.Schema(type=openapi.TYPE_INTEGER, example=29821),
                 "achievements": openapi.Schema(type=openapi.TYPE_INTEGER, example=0),
                 "recommendations": openapi.Schema(
-                    type=openapi.TYPE_INTEGER, example=None
+                    type=openapi.TYPE_INTEGER, example="-"
                 ),
-                "notes": openapi.Schema(type=openapi.TYPE_STRING, example=None),
+                "notes": openapi.Schema(type=openapi.TYPE_STRING, example="-"),
                 "average_playtime_forever": openapi.Schema(
                     type=openapi.TYPE_STRING, example=5293
                 ),
@@ -530,13 +530,54 @@ def create_game_schema():
                     type=openapi.TYPE_STRING,
                     example="Action,RPG,Souls-like,Difficult,Fantasy",
                 ),
-                "screenshots": openapi.Schema(type=openapi.TYPE_STRING, example=None),
-                "movies": openapi.Schema(type=openapi.TYPE_STRING, example=None),
+                "screenshots": openapi.Schema(type=openapi.TYPE_STRING, example="-"),
+                "movies": openapi.Schema(type=openapi.TYPE_STRING, example="-"),
             },
         ),
         responses={
             201: openapi.Response(
                 description="Game created successfully",
+                examples={
+                    "application/json": {
+                        "name": "Elden Ring: Shadow of the Erdtree",
+                        "release_date": "2024-06-12",
+                        "estimated_owners": "20000000 - 50000000",
+                        "peak_ccu": 781261,
+                        "required_age": 16,
+                        "price": 39.99,
+                        "dlc_count": 0,
+                        "about_the_game": "The ELDEN RING Shadow of the Erdtree expansion features an all-new story set in the Land of Shadow imbued with mystery, perilous dungeons, and new enemies, weapons and equipment.",
+                        "supported_languages": "['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Japanese', 'Korean', 'Polish', 'Portuguese - Brazil', 'Russian', 'Simplified Chinese', 'Spanish - Latin America', 'Thai', 'Traditional Chinese']",
+                        "full_audio_languages": "['English']",
+                        "reviews": "-",
+                        "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg?t=1654259241",
+                        "website": "https://eldenring.com/",
+                        "support_url": "https://www.bandainamcoent.com/support",
+                        "support_email": "bandainamcoent@support.com",
+                        "windows": True,
+                        "mac": True,
+                        "linux": True,
+                        "metacritic_score": 92,
+                        "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring-shadow-of-the-erdtree?ftag=MCD-06-10aaa1f",
+                        "user_score": 70,
+                        "positive": 70501,
+                        "negative": 29821,
+                        "achievements": 0,
+                        "recommendations": 0,
+                        "notes": "-",
+                        "average_playtime_forever": "5293",
+                        "average_playtime_two_weeks": "403",
+                        "median_playtime_forever": "4467",
+                        "median_playtime_two_weeks": "131",
+                        "developers": "FromSoftware, Inc.",
+                        "publishers": "Bandai Namco Entertainment",
+                        "categories": "Single-player,Multi-player,PvP,Online PvP,Co-op,Online Co-op,Steam Achievements,Full controller support,Steam Trading Cards",
+                        "genres": "Action,RPG",
+                        "tags": "Action,RPG,Souls-like,Difficult,Fantasy",
+                        "screenshots": "-",
+                        "movies": "-",
+                    }
+                },
                 schema=GameSerializer(),
             ),
             400: openapi.Response(
@@ -546,7 +587,7 @@ def create_game_schema():
     )
 
 
-"""
+""""
 Returns a swagger_auto_schema decorator for the game update endpoint.
 
 This schema defines:
@@ -591,6 +632,53 @@ def update_game_schema():
         responses={
             200: openapi.Response(
                 description="Game updated successfully",
+                examples={
+                    "application/json": {
+                        "message": "Game updated successfully",
+                        "game": {
+                            "application/json": {
+                                "id": 1979,
+                                "name": "ELDEN RING",
+                                "release_date": "2022-02-24",
+                                "estimated_owners": "20000000 - 50000000",
+                                "peak_ccu": 46431,
+                                "required_age": 16,
+                                "price": "59.99",
+                                "dlc_count": 0,
+                                "about_the_game": "THE NEW FANTASY ACTION RPG. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between. • A Vast World Full of Excitement A vast world where open fields with a variety of situations and huge dungeons with complex and three-dimensional designs are seamlessly connected. As you explore, the joy of discovering unknown and overwhelming threats await you, leading to a high sense of accomplishment. • Create your Own Character In addition to customizing the appearance of your character, you can freely combine the weapons, armor, and magic that you equip. You can develop your character according to your play style, such as increasing your muscle strength to become a strong warrior, or mastering magic. • An Epic Drama Born from a Myth A multilayered story told in fragments. An epic drama in which the various thoughts of the characters intersect in the Lands Between. • Unique Online Play that Loosely Connects You to Others In addition to multiplayer, where you can directly connect with other players and travel together, the game supports a unique asynchronous online element that allows you to feel the presence of others.",
+                                "supported_languages": "['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Japanese', 'Korean', 'Polish', 'Portuguese - Brazil', 'Russian', 'Simplified Chinese', 'Spanish - Latin America', 'Thai', 'Traditional Chinese']",
+                                "full_audio_languages": "['English', 'Traditional Chinese']",
+                                "reviews": "“Put a ring on it.” 10/10 – IGN “An unmissable open-world masterpiece.” 10/10 – Gaming Bible “Exploration is jaw dropping.” 5/5 – Games Radar",
+                                "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg?t=1654259241",
+                                "website": "https://www.eldenring.jp/",
+                                "support_url": "https://www.bandainamcoent.com/support",
+                                "support_email": "",
+                                "windows": True,
+                                "mac": False,
+                                "linux": False,
+                                "metacritic_score": 94,
+                                "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring?ftag=MCD-06-10aaa1f",
+                                "user_score": 0,
+                                "positive": 460812,
+                                "negative": 51238,
+                                "achievements": 42,
+                                "recommendations": 391693,
+                                "notes": "",
+                                "average_playtime_forever": 5293,
+                                "average_playtime_two_weeks": 403,
+                                "median_playtime_forever": 4467,
+                                "median_playtime_two_weeks": 131,
+                                "developers": "FromSoftware Inc.",
+                                "publishers": "FromSoftware Inc.,Bandai Namco Entertainment",
+                                "categories": "Single-player,Multi-player,PvP,Online PvP,Co-op,Online Co-op,Steam Achievements,Full controller support,Steam Trading Cards",
+                                "genres": "Action,RPG",
+                                "tags": "Souls-like,Relaxing,Dark Fantasy,RPG,Difficult,Open World,Action RPG,Third Person,Fantasy,Multiplayer,Online Co-Op,Singleplayer,Action,Co-op,PvP,Violent,Atmospheric,3D,Great Soundtrack,Walking Simulator",
+                                "screenshots": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_e80a907c2c43337e53316c71555c3c3035a1343e.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_25cd489871907387c1b915022a96b196661b6e17.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_3e556415d1bda00d749b2166ced264bec76f06ee.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_ae44317e3bd07b7690b4d62cc5d0d1df30367a91.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_c372274833ae6e5437b952fa1979430546a43ad9.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_e87a3e84890ab19f8995566e62762d5f8ed39315.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_3aec1455923ef49f4e777c2a94dbcd0256f77eb0.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_b87601dee58f4dbc36e40a8d803dc6a53ceefe07.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_8b58d96262fb0d62a482621b86c6ff85f4f57997.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_1011610a0e330c41a75ffd0b3a9a1bac3205c46a.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_41e2e8f3b0ad631e929e0c2ec3d1f21de883e98c.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_7dcd7e6c42024c2d5a5a31d758039ded13a47527.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_abd681cde3402155a35edb82919b7602cc7ec338.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_0b6e59057b02392b21dde62b4dde65d447e1fa3c.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_7523a8fc7775ae65cabd94d092ebecbd963258b6.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_a176eea67cd421307a6c627514129237d6202890.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_ebb332e63dfab864c3bf3c3b1001b69f4da25f9f.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_24bd769aeffacd45fcd3a7ae9efde22b24b5fca9.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_75f25974c20b8704fe5ee246f74896b550088d3e.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_fb2957cce97f4633bc743b561f76865e6993c781.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_35ff7ed4b67e2bb73e54f6c10a4f8d9390c16203.1920x1080.jpg?t=1654259241",
+                                "movies": "http://cdn.akamai.steamstatic.com/steam/apps/256889452/movie_max.mp4?t=1654109247,http://cdn.akamai.steamstatic.com/steam/apps/256875477/movie_max.mp4?t=1645743469,http://cdn.akamai.steamstatic.com/steam/apps/256864891/movie_max.mp4?t=1645830855,http://cdn.akamai.steamstatic.com/steam/apps/256859890/movie_max.mp4?t=1641845061,http://cdn.akamai.steamstatic.com/steam/apps/256839312/movie_max.mp4?t=1641422486",
+                            }
+                        },
+                    }
+                },
                 schema=GameSerializer(),
             ),
             400: openapi.Response(
