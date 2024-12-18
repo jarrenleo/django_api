@@ -1,122 +1,152 @@
-from django.core.management.base import BaseCommand
 import csv
 from datetime import datetime
-from api.models import Game
-
-"""
-Django management command to import game data from a CSV file into the database.
-
-This command reads a CSV file containing game information and creates Game model
-instances for each row. It handles data validation and type conversion for various
-fields including dates, boolean values, and nullable numeric fields.
-
-Usage:
-    python manage.py import_data /data/data.csv
-
-The CSV file should contain columns matching the Game model fields, including:
-- Name: Game title (required)
-- Release date: Game release date in format 'MMM DD, YYYY' or 'MMM YYYY'
-- Estimated owners: Estimated number of game owners
-- Peak CCU: Peak concurrent users
-- Required age: Minimum required age to play
-- Price: Game price (converted to float)
-- And other fields matching the Game model...
-"""
+from django.core.management.base import BaseCommand
+from api.models import (
+    SupportedLanguage,
+    FullAudioLanguage,
+    Developer,
+    Publisher,
+    Category,
+    Genre,
+    Tag,
+    Game,
+)
 
 
 class Command(BaseCommand):
-    help = "Import games from CSV file"
+    help = "Import games data from CSV file"
 
     def add_arguments(self, parser):
-        """Add command line arguments"""
-        parser.add_argument("game_csv", type=str, help="Path to the game CSV file")
+        parser.add_argument("file_path", type=str, help="Path to the CSV file")
 
-        """
-        Execute the command to import game data from the CSV file.
+    def parse_list(self, list_str):
+        if not list_str:
+            return []
+        if list_str.startswith("[") and list_str.endswith("]"):
+            list_str = list_str[1:-1]
+            return [item.strip().strip("''") for item in list_str.split(",")]
 
-        Args:
-            game_csv: Path to the CSV file containing game data
+        return [item.strip() for item in list_str.split(",")]
 
-        The method will:
-        1. Open and read the CSV file
-        2. Process each row, converting data types as needed
-        3. Create Game instances in the database
-        4. Handle and report any errors during import
-        """
+    def parse_boolean(self, boolean_str):
+        if not boolean_str:
+            return False
+        return boolean_str.lower() == "true"
 
-    def handle(self, *args, **options):
-        game_csv = options["game_csv"]
+    def clean_date(self, date_str):
+        try:
+            release_date = datetime.strptime(date_str, "%b %d, %Y").strftime("%Y-%m-%d")
+        except ValueError:
+            release_date = datetime.strptime(date_str, "%b %Y").strftime("%Y-%m-1")
+        return release_date
 
-        with open(game_csv, "r", encoding="utf-8") as file:
+    def extract_estimated_owners(self, owners_str):
+        if not owners_str or owners_str == "0 - 0":
+            return 0
+        try:
+            return int(owners_str.split(" - ")[1].replace(",", ""))
+        except (ValueError, IndexError):
+            return 0
+
+    def handle(self, *args, **kwargs):
+        with open("data/data.csv", "r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
 
             for row in reader:
-                try:
-                    # Parse release date handling two possible formats
-                    try:
-                        release_date = datetime.strptime(
-                            row["Release date"], "%b %d, %Y"
-                        ).strftime("%Y-%m-%d")
-                    except ValueError:
-                        release_date = datetime.strptime(
-                            row["Release date"], "%b %Y"
-                        ).strftime("%Y-%m-1")
-
-                    # Convert platform availability to boolean
-                    windows = row["Windows"].lower() == "true"
-                    mac = row["Mac"].lower() == "true"
-                    linux = row["Linux"].lower() == "true"
-
-                    # Create Game instance with all fields from CSV
-                    Game.objects.create(
-                        name=row["Name"],
-                        release_date=release_date,
-                        estimated_owners=row["Estimated owners"],
-                        peak_ccu=row["Peak CCU"],
-                        required_age=row["Required age"],
-                        price=float(row["Price"]) if row["Price"] else 0.0,
-                        dlc_count=row["DLC count"],
-                        about_the_game=row["About the game"],
-                        supported_languages=row["Supported languages"],
-                        full_audio_languages=row["Full audio languages"],
-                        reviews=row["Reviews"],
-                        header_image=row["Header image"],
-                        website=row["Website"],
-                        support_url=row["Support url"],
-                        support_email=row["Support email"],
-                        windows=windows,
-                        mac=mac,
-                        linux=linux,
-                        metacritic_score=row["Metacritic score"] or None,
-                        metacritic_url=row["Metacritic url"],
-                        user_score=row["User score"] or None,
-                        positive=row["Positive"] or None,
-                        negative=row["Negative"] or None,
-                        achievements=row["Achievements"] or None,
-                        recommendations=row["Recommendations"] or None,
-                        notes=row["Notes"],
-                        average_playtime_forever=row["Average playtime forever"]
-                        or None,
-                        average_playtime_two_weeks=row["Average playtime two weeks"]
-                        or None,
-                        median_playtime_forever=row["Median playtime forever"] or None,
-                        median_playtime_two_weeks=row["Median playtime two weeks"]
-                        or None,
-                        developers=row["Developers"],
-                        publishers=row["Publishers"],
-                        categories=row["Categories"],
-                        genres=row["Genres"],
-                        tags=row["Tags"],
-                        screenshots=row["Screenshots"],
-                        movies=row["Movies"],
+                # Create or get supported languages
+                supported_languages = self.parse_list(row["Supported languages"])
+                supported_languages_objects = []
+                for language in supported_languages:
+                    language_object, _ = SupportedLanguage.objects.get_or_create(
+                        supported_language=language.strip()
                     )
-                except Exception as e:
-                    # Log any errors during import
-                    self.stdout.write(
-                        self.style.ERROR(
-                            f'Error importing game {row["Name"]}: {str(e)}'
-                        )
-                    )
-                    continue
+                    supported_languages_objects.append(language_object)
 
-            self.stdout.write(self.style.SUCCESS("Successfully imported games data"))
+                # Create or get full audio languages
+                full_audio_languages = self.parse_list(row["Full audio languages"])
+                full_audio_languages_objects = []
+                for language in full_audio_languages:
+                    language_object, _ = FullAudioLanguage.objects.get_or_create(
+                        full_audio_language=language.strip()
+                    )
+                    full_audio_languages_objects.append(language_object)
+
+                # Create or get developers
+                developers = self.parse_list(row["Developers"])
+                developer_objects = []
+                for developer in developers:
+                    developer_object, _ = Developer.objects.get_or_create(
+                        developer=developer.strip()
+                    )
+                    developer_objects.append(developer_object)
+
+                # Create or get publishers
+                publishers = self.parse_list(row["Publishers"])
+                publisher_objects = []
+                for publisher in publishers:
+                    publisher_object, _ = Publisher.objects.get_or_create(
+                        publisher=publisher.strip()
+                    )
+                    publisher_objects.append(publisher_object)
+
+                # Create or get categories
+                categories = self.parse_list(row["Categories"])
+                category_objects = []
+                for category in categories:
+                    category_object, _ = Category.objects.get_or_create(
+                        category=category.strip()
+                    )
+                    category_objects.append(category_object)
+
+                # Create or get genres
+                genres = self.parse_list(row["Genres"])
+                genre_objects = []
+                for genre in genres:
+                    genre_object, _ = Genre.objects.get_or_create(genre=genre.strip())
+                    genre_objects.append(genre_object)
+
+                # Create or get tags
+                tags = self.parse_list(row["Tags"])
+                tag_objects = []
+                for tag in tags:
+                    tag_object, _ = Tag.objects.get_or_create(tag=tag.strip())
+                    tag_objects.append(tag_object)
+
+                # Create the game
+                game = Game.objects.create(
+                    name=row["Name"],
+                    release_date=self.clean_date(row["Release date"]),
+                    estimated_owners=self.extract_estimated_owners(
+                        row["Estimated owners"]
+                    ),
+                    peak_concurrent_users=row["Peak CCU"],
+                    required_age=row["Required age"],
+                    price=row["Price"],
+                    dlc_count=row["DLC count"],
+                    about_the_game=row["About the game"],
+                    header_image=row["Header image"],
+                    website=row["Website"],
+                    support_url=row["Support url"],
+                    support_email=row["Support email"],
+                    windows=self.parse_boolean(row["Windows"]),
+                    mac=self.parse_boolean(row["Mac"]),
+                    linux=self.parse_boolean(row["Linux"]),
+                    metacritic_score=row["Metacritic score"],
+                    metacritic_url=row["Metacritic url"],
+                    positive_ratings=row["Positive"],
+                    negative_ratings=row["Negative"],
+                    achievements=row["Achievements"],
+                    average_playtime=row["Average playtime forever"],
+                    median_playtime=row["Median playtime forever"],
+                )
+
+                # Add many-to-many relationships
+                game.supported_languages.set(supported_languages_objects)
+                game.full_audio_languages.set(full_audio_languages_objects)
+                game.developers.set(developer_objects)
+                game.publishers.set(publisher_objects)
+                game.categories.set(category_objects)
+                game.genres.set(genre_objects)
+                game.tags.set(tag_objects)
+
+                self.stdout.write(f"Imported {game.name}")

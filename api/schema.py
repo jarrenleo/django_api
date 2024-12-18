@@ -12,15 +12,21 @@ It specifies:
     - id (optional): Integer ID of the game to retrieve
     - name (optional): String name of the game to search for
 - Response formats:
-    - 200: Successful response with full game details
+    - 200: Successful response with full game details including:
+        - Basic info (name, release date, price)
+        - Statistics (owners, peak users, playtime)
+        - Content details (age rating, DLC count, description)
+        - Platform support (Windows, Mac, Linux)
+        - Languages (interface and audio)
+        - Media (header image)
+        - External links (website, support)
+        - Ratings (Metacritic, user ratings)
+        - Related entities (developers, publishers, genres, tags)
     - 400: Error when neither id nor name provided
     - 404: Error when game not found
 
-The successful response includes a complete game object with all fields like name,
-release date, pricing, descriptions, statistics, etc.
-
 Returns:
-    swagger_auto_schema decorator configured with the endpoint documentation
+    swagger_auto_schema: Decorator configured with complete endpoint documentation
 """
 
 
@@ -49,19 +55,33 @@ def get_game_schema():
                 description="Successful response",
                 examples={
                     "application/json": {
-                        "id": 1979,
+                        "id": 5504,
                         "name": "ELDEN RING",
                         "release_date": "2022-02-24",
-                        "estimated_owners": "20000000 - 50000000",
-                        "peak_ccu": 46431,
+                        "estimated_owners": 50000000,
+                        "peak_concurrent_users": 46431,
                         "required_age": 16,
                         "price": "59.99",
                         "dlc_count": 0,
                         "about_the_game": "THE NEW FANTASY ACTION RPG. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between. • A Vast World Full of Excitement A vast world where open fields with a variety of situations and huge dungeons with complex and three-dimensional designs are seamlessly connected. As you explore, the joy of discovering unknown and overwhelming threats await you, leading to a high sense of accomplishment. • Create your Own Character In addition to customizing the appearance of your character, you can freely combine the weapons, armor, and magic that you equip. You can develop your character according to your play style, such as increasing your muscle strength to become a strong warrior, or mastering magic. • An Epic Drama Born from a Myth A multilayered story told in fragments. An epic drama in which the various thoughts of the characters intersect in the Lands Between. • Unique Online Play that Loosely Connects You to Others In addition to multiplayer, where you can directly connect with other players and travel together, the game supports a unique asynchronous online element that allows you to feel the presence of others.",
-                        "supported_languages": "['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Japanese', 'Korean', 'Polish', 'Portuguese - Brazil', 'Russian', 'Simplified Chinese', 'Spanish - Latin America', 'Thai', 'Traditional Chinese']",
-                        "full_audio_languages": "['English', 'Traditional Chinese']",
-                        "reviews": "“Put a ring on it.” 10/10 – IGN “An unmissable open-world masterpiece.” 10/10 – Gaming Bible “Exploration is jaw dropping.” 5/5 – Games Radar",
-                        "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg?t=1654259241",
+                        "supported_languages": [
+                            "English",
+                            "French",
+                            "German",
+                            "Polish",
+                            "Russian",
+                            "Italian",
+                            "Japanese",
+                            "Spanish - Spain",
+                            "Korean",
+                            "Portuguese - Brazil",
+                            "Simplified Chinese",
+                            "Traditional Chinese",
+                            "Spanish - Latin America",
+                            "Thai",
+                        ],
+                        "full_audio_languages": ["English", "Traditional Chinese"],
+                        "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg",
                         "website": "",
                         "support_url": "https://www.bandainamcoent.com/support",
                         "support_email": "",
@@ -69,27 +89,54 @@ def get_game_schema():
                         "mac": False,
                         "linux": False,
                         "metacritic_score": 94,
-                        "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring?ftag=MCD-06-10aaa1f",
-                        "user_score": 0,
-                        "positive": 460812,
-                        "negative": 51238,
+                        "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring",
+                        "positive_ratings": 460812,
+                        "negative_ratings": 51238,
                         "achievements": 42,
-                        "recommendations": 391693,
-                        "notes": "",
-                        "average_playtime_forever": 5293,
-                        "average_playtime_two_weeks": 403,
-                        "median_playtime_forever": 4467,
-                        "median_playtime_two_weeks": 131,
-                        "developers": "FromSoftware Inc.",
-                        "publishers": "FromSoftware Inc.,Bandai Namco Entertainment",
-                        "categories": "Single-player,Multi-player,PvP,Online PvP,Co-op,Online Co-op,Steam Achievements,Full controller support,Steam Trading Cards",
-                        "genres": "Action,RPG",
-                        "tags": "Souls-like,Relaxing,Dark Fantasy,RPG,Difficult,Open World,Action RPG,Third Person,Fantasy,Multiplayer,Online Co-Op,Singleplayer,Action,Co-op,PvP,Violent,Atmospheric,3D,Great Soundtrack,Walking Simulator",
-                        "screenshots": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_e80a907c2c43337e53316c71555c3c3035a1343e.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_25cd489871907387c1b915022a96b196661b6e17.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_3e556415d1bda00d749b2166ced264bec76f06ee.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_ae44317e3bd07b7690b4d62cc5d0d1df30367a91.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_c372274833ae6e5437b952fa1979430546a43ad9.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_e87a3e84890ab19f8995566e62762d5f8ed39315.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_3aec1455923ef49f4e777c2a94dbcd0256f77eb0.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_b87601dee58f4dbc36e40a8d803dc6a53ceefe07.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_8b58d96262fb0d62a482621b86c6ff85f4f57997.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_1011610a0e330c41a75ffd0b3a9a1bac3205c46a.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_41e2e8f3b0ad631e929e0c2ec3d1f21de883e98c.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_7dcd7e6c42024c2d5a5a31d758039ded13a47527.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_abd681cde3402155a35edb82919b7602cc7ec338.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_0b6e59057b02392b21dde62b4dde65d447e1fa3c.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_7523a8fc7775ae65cabd94d092ebecbd963258b6.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_a176eea67cd421307a6c627514129237d6202890.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_ebb332e63dfab864c3bf3c3b1001b69f4da25f9f.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_24bd769aeffacd45fcd3a7ae9efde22b24b5fca9.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_75f25974c20b8704fe5ee246f74896b550088d3e.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_fb2957cce97f4633bc743b561f76865e6993c781.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_35ff7ed4b67e2bb73e54f6c10a4f8d9390c16203.1920x1080.jpg?t=1654259241",
-                        "movies": "http://cdn.akamai.steamstatic.com/steam/apps/256889452/movie_max.mp4?t=1654109247,http://cdn.akamai.steamstatic.com/steam/apps/256875477/movie_max.mp4?t=1645743469,http://cdn.akamai.steamstatic.com/steam/apps/256864891/movie_max.mp4?t=1645830855,http://cdn.akamai.steamstatic.com/steam/apps/256859890/movie_max.mp4?t=1641845061,http://cdn.akamai.steamstatic.com/steam/apps/256839312/movie_max.mp4?t=1641422486",
+                        "average_playtime": 5293,
+                        "median_playtime": 4467,
+                        "developers": ["FromSoftware Inc."],
+                        "publishers": [
+                            "Bandai Namco Entertainment",
+                            "FromSoftware Inc.",
+                        ],
+                        "categories": [
+                            "Single-player",
+                            "Steam Achievements",
+                            "Steam Trading Cards",
+                            "Multi-player",
+                            "Co-op",
+                            "Full controller support",
+                            "PvP",
+                            "Online PvP",
+                            "Online Co-op",
+                        ],
+                        "genres": ["RPG", "Action"],
+                        "tags": [
+                            "RPG",
+                            "Difficult",
+                            "Action",
+                            "Third Person",
+                            "Co-op",
+                            "Singleplayer",
+                            "Multiplayer",
+                            "Open World",
+                            "Great Soundtrack",
+                            "Atmospheric",
+                            "Violent",
+                            "Action RPG",
+                            "Fantasy",
+                            "PvP",
+                            "Online Co-Op",
+                            "Walking Simulator",
+                            "3D",
+                            "Relaxing",
+                            "Dark Fantasy",
+                            "Souls-like",
+                        ],
                     }
                 },
-                schema=GameSerializer(),
+                schema=GameSerializer(many=True),
             ),
             400: openapi.Response(
                 description="Bad Request - Neither id nor name provided",
@@ -100,33 +147,693 @@ def get_game_schema():
         },
     )
 
-    """
-    Swagger/OpenAPI schema for the GET /games endpoint.
 
-    This schema defines the API documentation for retrieving a paginated list of games,
-    with support for filtering and sorting options.
+"""
+Swagger/OpenAPI schema decorator for game creation endpoint.
 
-    Query Parameters:
-        filterBy (str, optional): Filter games by:
-            - genre (e.g. Action,RPG)
-            - platform (e.g. windows,mac,linux)
-            - year (e.g. 2021,2022,2023)
-        sortBy (str, optional): Sort results by one of:
-            - metacriticScore
-            - price
-            - releaseDate
-        sortOrder (str, optional): Sort direction, either 'asc' or 'desc'. Defaults to 'desc'
-        page (int, optional): Page number for pagination
-        pageSize (int, optional): Number of results per page, max 100. Defaults to 100
+This decorator provides detailed schema information for the POST endpoint that creates a new game.
+It specifies:
+- HTTP method: POST
+- Request body: Complete game details including
+    - Basic info (name, release date, price)
+    - Statistics (owners, peak users, playtime)
+    - Content details (age rating, DLC count, description) 
+    - Platform support (Windows, Mac, Linux)
+    - Languages (interface and audio)
+    - Media (header image)
+    - External links (website, support)
+    - Ratings (Metacritic, user ratings)
+    - Related entities (developers, publishers, genres, tags)
+- Response formats:
+    - 201: Successfully created game with complete details
+    - 400: Invalid request data
 
-    Returns:
-        swagger_auto_schema: OpenAPI schema configuration with:
-            - Method: GET
-            - Parameters: filterBy, sortBy, sortOrder, page, pageSize
-            - Responses:
-                200: Successful response with paginated game results
-                400: Bad request error
-    """
+Returns:
+    swagger_auto_schema: Decorator with complete schema definition for game creation
+"""
+
+
+def create_game_schema():
+    return swagger_auto_schema(
+        method="post",
+        operation_description="Create a new game.",
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "name": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    example="Elden Ring: Shadow of the Erdtree",
+                ),
+                "release_date": openapi.Schema(
+                    type=openapi.TYPE_STRING, format="date", example="2024-06-12"
+                ),
+                "estimated_owners": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=20000000
+                ),
+                "peak_concurrent_users": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=781261
+                ),
+                "required_age": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=16, minimum=0, maximum=100
+                ),
+                "price": openapi.Schema(
+                    type=openapi.TYPE_NUMBER, format="decimal", example=39.99, minimum=0
+                ),
+                "dlc_count": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=0, minimum=0
+                ),
+                "about_the_game": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    example="The ELDEN RING Shadow of the Erdtree expansion features an all-new story set in the Land of Shadow imbued with mystery, perilous dungeons, and new enemies, weapons and equipment.",
+                    nullable=True,
+                ),
+                "supported_languages": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                    example=["English", "French", "Italian"],
+                ),
+                "full_audio_languages": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                    example=["English"],
+                ),
+                "header_image": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="uri",
+                    example="https://cdn.akamai.steamstatic.com/steam/apps/2778580/header.jpg",
+                    nullable=True,
+                ),
+                "website": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="uri",
+                    example="https://www.eldenring.jp/",
+                    nullable=True,
+                ),
+                "support_url": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="uri",
+                    example="https://www.bandainamcoent.com/support",
+                    nullable=True,
+                ),
+                "support_email": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="email",
+                    example="support@bandainamco.com",
+                    nullable=True,
+                ),
+                "windows": openapi.Schema(type=openapi.TYPE_BOOLEAN, example=True),
+                "mac": openapi.Schema(type=openapi.TYPE_BOOLEAN, example=False),
+                "linux": openapi.Schema(type=openapi.TYPE_BOOLEAN, example=False),
+                "metacritic_score": openapi.Schema(
+                    type=openapi.TYPE_INTEGER,
+                    example=92,
+                    minimum=0,
+                    maximum=100,
+                    nullable=True,
+                ),
+                "metacritic_url": openapi.Schema(
+                    type=openapi.TYPE_STRING,
+                    format="uri",
+                    example="https://www.metacritic.com/game/elden-ring-shadow-of-the-erdtree",
+                    nullable=True,
+                ),
+                "positive_ratings": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=70501, minimum=0, nullable=True
+                ),
+                "negative_ratings": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=29821, minimum=0, nullable=True
+                ),
+                "achievements": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=0, minimum=0, nullable=True
+                ),
+                "average_playtime": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=5293, minimum=0
+                ),
+                "median_playtime": openapi.Schema(
+                    type=openapi.TYPE_INTEGER, example=4467, minimum=0
+                ),
+                "developers": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                    example=["FromSoftware Inc."],
+                ),
+                "publishers": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                    example=["Bandai Namco Entertainment"],
+                ),
+                "categories": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                    example=["Single-player", "Multi-player", "PvP"],
+                ),
+                "genres": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                    example=["Action", "RPG"],
+                ),
+                "tags": openapi.Schema(
+                    type=openapi.TYPE_ARRAY,
+                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                    example=["Action", "RPG", "Souls-like"],
+                ),
+            },
+        ),
+        responses={
+            201: openapi.Response(
+                description="Game created successfully",
+                examples={
+                    "application/json": {
+                        "message": "Game created successfully",
+                        "game": {
+                            "name": "Elden Ring: Shadow of the Erdtree",
+                            "release_date": "2024-06-12",
+                            "estimated_owners": 20000000,
+                            "peak_concurrent_users": 781261,
+                            "required_age": 16,
+                            "price": 39.99,
+                            "dlc_count": 0,
+                            "about_the_game": "The ELDEN RING Shadow of the Erdtree expansion features an all-new story set in the Land of Shadow imbued with mystery, perilous dungeons, and new enemies, weapons and equipment.",
+                            "supported_languages": ["English", "French", "Italian"],
+                            "full_audio_languages": ["English"],
+                            "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/2778580/header.jpg",
+                            "website": "https://www.eldenring.jp/",
+                            "support_url": "https://www.bandainamcoent.com/support",
+                            "support_email": "support@bandainamco.com",
+                            "windows": True,
+                            "mac": False,
+                            "linux": False,
+                            "metacritic_score": 92,
+                            "metacritic_url": "https://www.metacritic.com/game/elden-ring-shadow-of-the-erdtree",
+                            "positive_ratings": 70501,
+                            "negative_ratings": 29821,
+                            "achievements": 0,
+                            "average_playtime": 5293,
+                            "median_playtime": 4467,
+                            "developers": ["FromSoftware Inc."],
+                            "publishers": ["Bandai Namco Entertainment"],
+                            "categories": ["Single-player", "Multi-player", "PvP"],
+                            "genres": ["Action", "RPG"],
+                            "tags": ["Action", "RPG", "Souls-like"],
+                        },
+                    }
+                },
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "message": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                            example="Game created successfully",
+                        ),
+                        "game": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                "name": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                    example="Elden Ring: Shadow of the Erdtree",
+                                ),
+                                "release_date": openapi.Schema(
+                                    type=openapi.TYPE_STRING, example="2024-06-12"
+                                ),
+                                "estimated_owners": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=20000000
+                                ),
+                                "peak_concurrent_users": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=781261
+                                ),
+                                "required_age": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=16
+                                ),
+                                "price": openapi.Schema(
+                                    type=openapi.TYPE_NUMBER, example=39.99
+                                ),
+                                "dlc_count": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=0
+                                ),
+                                "about_the_game": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                    example="The ELDEN RING Shadow of the Erdtree expansion features an all-new story set in the Land of Shadow imbued with mystery, perilous dungeons, and new enemies, weapons and equipment.",
+                                ),
+                                "supported_languages": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    example=["English", "French", "Italian"],
+                                ),
+                                "full_audio_languages": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    example=["English"],
+                                ),
+                                "header_image": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                    example="https://cdn.akamai.steamstatic.com/steam/apps/2778580/header.jpg",
+                                ),
+                                "website": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                    example="https://www.eldenring.jp/",
+                                ),
+                                "support_url": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                    example="https://www.bandainamcoent.com/support",
+                                ),
+                                "support_email": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                    example="support@bandainamco.com",
+                                ),
+                                "windows": openapi.Schema(
+                                    type=openapi.TYPE_BOOLEAN, example=True
+                                ),
+                                "mac": openapi.Schema(
+                                    type=openapi.TYPE_BOOLEAN, example=False
+                                ),
+                                "linux": openapi.Schema(
+                                    type=openapi.TYPE_BOOLEAN, example=False
+                                ),
+                                "metacritic_score": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=92
+                                ),
+                                "metacritic_url": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                    example="https://www.metacritic.com/game/pc/elden-ring-shadow-of-the-erdtree",
+                                ),
+                                "positive_ratings": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=70501
+                                ),
+                                "negative_ratings": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=29821
+                                ),
+                                "achievements": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=0
+                                ),
+                                "average_playtime": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=5293
+                                ),
+                                "median_playtime": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=4467
+                                ),
+                                "developers": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    example=["FromSoftware Inc."],
+                                ),
+                                "publishers": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    example=["Bandai Namco Entertainment"],
+                                ),
+                                "categories": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    example=["Single-player", "Multi-player", "PvP"],
+                                ),
+                                "genres": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    example=["Action", "RPG"],
+                                ),
+                                "tags": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    example=["Action", "RPG", "Souls-like"],
+                                ),
+                            },
+                        ),
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                description="Invalid request data",
+            ),
+        },
+    )
+
+
+"""
+Returns a swagger_auto_schema decorator for the game update endpoint.
+
+This schema defines the OpenAPI/Swagger documentation for the PATCH endpoint that updates an existing game.
+It specifies:
+- HTTP method: PATCH
+- Query parameters:
+    - id (optional): Integer ID of the game to update
+    - name (optional): String name of the game to update
+- Request body: Fields that can be updated, including:
+    - Basic info (name, release date, price)
+    - Statistics (owners, peak users, playtime)
+    - Content details (age rating, DLC count, description)
+    - Platform support (Windows, Mac, Linux)
+    - Languages (interface and audio)
+    - Media (header image)
+    - External links (website, support)
+    - Ratings (Metacritic, user ratings)
+    - Related entities (developers, publishers, genres, tags)
+- Response formats:
+    - 200: Successfully updated game with complete details
+    - 400: Invalid request data
+    - 404: Game not found
+
+Returns:
+    swagger_auto_schema: Decorator with complete schema definition for game updates
+"""
+
+
+def update_game_schema():
+    return swagger_auto_schema(
+        methods=["patch"],
+        operation_description="Update an existing game by ID or name",
+        manual_parameters=[
+            openapi.Parameter(
+                "id",
+                openapi.IN_QUERY,
+                description="The unique identifier of the game to update",
+                type=openapi.TYPE_INTEGER,
+                required=False,
+            ),
+            openapi.Parameter(
+                "name",
+                openapi.IN_QUERY,
+                description="The name of the game to update",
+                type=openapi.TYPE_STRING,
+                required=False,
+            ),
+        ],
+        request_body=openapi.Schema(
+            type=openapi.TYPE_OBJECT,
+            properties={
+                "website": openapi.Schema(
+                    type=openapi.TYPE_STRING, example="https://www.eldenring.jp/"
+                ),
+            },
+        ),
+        responses={
+            200: openapi.Response(
+                description="Game updated successfully",
+                examples={
+                    "application/json": {
+                        "message": "Game updated successfully",
+                        "game": {
+                            "application/json": {
+                                "id": 5504,
+                                "name": "ELDEN RING",
+                                "release_date": "2022-02-24",
+                                "estimated_owners": 50000000,
+                                "peak_concurrent_users": 46431,
+                                "required_age": 16,
+                                "price": "59.99",
+                                "dlc_count": 0,
+                                "about_the_game": "THE NEW FANTASY ACTION RPG. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between. • A Vast World Full of Excitement A vast world where open fields with a variety of situations and huge dungeons with complex and three-dimensional designs are seamlessly connected. As you explore, the joy of discovering unknown and overwhelming threats await you, leading to a high sense of accomplishment. • Create your Own Character In addition to customizing the appearance of your character, you can freely combine the weapons, armor, and magic that you equip. You can develop your character according to your play style, such as increasing your muscle strength to become a strong warrior, or mastering magic. • An Epic Drama Born from a Myth A multilayered story told in fragments. An epic drama in which the various thoughts of the characters intersect in the Lands Between. • Unique Online Play that Loosely Connects You to Others In addition to multiplayer, where you can directly connect with other players and travel together, the game supports a unique asynchronous online element that allows you to feel the presence of others.",
+                                "supported_languages": [
+                                    "English",
+                                    "French",
+                                    "German",
+                                    "Polish",
+                                    "Russian",
+                                    "Italian",
+                                    "Japanese",
+                                    "Spanish - Spain",
+                                    "Korean",
+                                    "Portuguese - Brazil",
+                                    "Simplified Chinese",
+                                    "Traditional Chinese",
+                                    "Spanish - Latin America",
+                                    "Thai",
+                                ],
+                                "full_audio_languages": [
+                                    "English",
+                                    "Traditional Chinese",
+                                ],
+                                "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg",
+                                "website": "https://www.eldenring.jp/",
+                                "support_url": "https://www.bandainamcoent.com/support",
+                                "support_email": "",
+                                "windows": True,
+                                "mac": False,
+                                "linux": False,
+                                "metacritic_score": 94,
+                                "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring",
+                                "positive_ratings": 460812,
+                                "negative_ratings": 51238,
+                                "achievements": 42,
+                                "average_playtime": 5293,
+                                "median_playtime": 4467,
+                                "developers": ["FromSoftware Inc."],
+                                "publishers": [
+                                    "Bandai Namco Entertainment",
+                                    "FromSoftware Inc.",
+                                ],
+                                "categories": [
+                                    "Single-player",
+                                    "Steam Achievements",
+                                    "Steam Trading Cards",
+                                    "Multi-player",
+                                    "Co-op",
+                                    "Full controller support",
+                                    "PvP",
+                                    "Online PvP",
+                                    "Online Co-op",
+                                ],
+                                "genres": ["RPG", "Action"],
+                                "tags": [
+                                    "RPG",
+                                    "Difficult",
+                                    "Action",
+                                    "Third Person",
+                                    "Co-op",
+                                    "Singleplayer",
+                                    "Multiplayer",
+                                    "Open World",
+                                    "Great Soundtrack",
+                                    "Atmospheric",
+                                    "Violent",
+                                    "Action RPG",
+                                    "Fantasy",
+                                    "PvP",
+                                    "Online Co-Op",
+                                    "Walking Simulator",
+                                    "3D",
+                                    "Relaxing",
+                                    "Dark Fantasy",
+                                    "Souls-like",
+                                ],
+                            }
+                        },
+                    }
+                },
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "message": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                        ),
+                        "game": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                "id": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "name": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "release_date": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "estimated_owners": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "peak_concurrent_users": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "required_age": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "price": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "dlc_count": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "about_the_game": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "supported_languages": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "full_audio_languages": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "header_image": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "website": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "support_url": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "support_email": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "windows": openapi.Schema(
+                                    type=openapi.TYPE_BOOLEAN,
+                                ),
+                                "mac": openapi.Schema(
+                                    type=openapi.TYPE_BOOLEAN,
+                                ),
+                                "linux": openapi.Schema(
+                                    type=openapi.TYPE_BOOLEAN,
+                                ),
+                                "metacritic_score": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "metacritic_url": openapi.Schema(
+                                    type=openapi.TYPE_STRING,
+                                ),
+                                "positive_ratings": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "negative_ratings": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "achievements": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "average_playtime": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "median_playtime": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER,
+                                ),
+                                "developers": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "publishers": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "categories": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "genres": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "tags": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                            },
+                        ),
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                description="Invalid request data",
+            ),
+            404: openapi.Response(
+                description="Game not found",
+            ),
+        },
+    )
+
+
+"""Swagger/OpenAPI schema for the DELETE game endpoint.
+
+This schema documents the API endpoint that deletes a single game by ID or name.
+It specifies:
+- HTTP method: DELETE 
+- Query parameters:
+    - id (optional): Integer ID of the game to delete
+    - name (optional): String name of the game to delete
+- Response formats:
+    - 204: Successfully deleted game with confirmation message
+    - 404: Error when game not found
+    - 400: Error when neither id nor name provided
+
+Returns:
+    swagger_auto_schema: Decorator configured with complete endpoint documentation
+"""
+
+
+def delete_game_schema():
+    return swagger_auto_schema(
+        method="delete",
+        operation_description="Delete a game by ID or name.",
+        manual_parameters=[
+            openapi.Parameter(
+                "id",
+                openapi.IN_QUERY,
+                description="The unique identifier of the game to delete",
+                type=openapi.TYPE_INTEGER,
+                required=False,
+            ),
+            openapi.Parameter(
+                "name",
+                openapi.IN_QUERY,
+                description="The name of the game to delete",
+                type=openapi.TYPE_STRING,
+                required=False,
+            ),
+        ],
+        responses={
+            204: openapi.Response(
+                description="Game deleted successfully",
+                examples={
+                    "application/json": {
+                        "message": "Game deleted successfully",
+                    }
+                },
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "message": openapi.Schema(type=openapi.TYPE_STRING),
+                    },
+                ),
+            ),
+            400: openapi.Response(
+                description="Bad Request - Neither id nor name provided",
+            ),
+            404: openapi.Response(
+                description="Game not found",
+            ),
+        },
+    )
+
+
+"""
+Swagger/OpenAPI schema for the GET /games endpoint.
+
+This schema defines the API documentation for retrieving a paginated list of games,
+with support for filtering and sorting options.
+
+Query Parameters:
+    filterBy (str, optional): Filter games by:
+        - genre: Comma-separated list of genres (e.g. Action,RPG)
+        - platform: Comma-separated list of platforms (e.g. windows,mac,linux)
+        - year: Comma-separated list of years (e.g. 2021,2022,2023)
+    sortBy (str, optional): Sort results by one of:
+        - metacriticScore: Sort by Metacritic review score
+        - price: Sort by game price
+        - releaseDate: Sort by release date
+    sortOrder (str, optional): Sort direction:
+        - asc: Ascending order
+        - desc: Descending order (default)
+    page (int, optional): Page number for pagination results
+    pageSize (int, optional): Number of results per page (default: 100, max: 100)
+
+Returns:
+    swagger_auto_schema: OpenAPI schema configuration with:
+        - Method: GET
+        - Parameters: filterBy, sortBy, sortOrder, page, pageSize
+        - Responses:
+            200: Successful response with paginated game results including:
+                - Pagination metadata (count, next/previous page links)
+                - Game details (basic info, stats, platforms, ratings, etc.)
+            400: Bad request error for invalid parameter values
+"""
 
 
 def get_games_schema():
@@ -137,7 +844,7 @@ def get_games_schema():
             openapi.Parameter(
                 "filterBy",
                 openapi.IN_QUERY,
-                description="Filter games by genre(Action,RPG), platform(windows,mac,linux), or year(2021,2022,2023)",
+                description="Filter games by 'genre(Action,RPG)', 'platform(windows,mac,linux)', or 'year(2021,2022,2023)'",
                 type=openapi.TYPE_STRING,
                 required=False,
             ),
@@ -183,53 +890,215 @@ def get_games_schema():
                             "previous": None,
                             "results": [
                                 {
-                                    "id": 3771,
-                                    "name": "Hogwarts Legacy",
-                                    "release_date": "2023-02-10",
-                                    "estimated_owners": "5000000 - 10000000",
-                                    "peak_ccu": 872138,
-                                    "required_age": 0,
+                                    "id": 5504,
+                                    "name": "ELDEN RING",
+                                    "release_date": "2022-02-24",
+                                    "estimated_owners": 50000000,
+                                    "peak_concurrent_users": 46431,
+                                    "required_age": 16,
                                     "price": "59.99",
-                                    "dlc_count": 1,
-                                    "about_the_game": "Hogwarts Legacy is an open-world action RPG set in the world first introduced in the Harry Potter books. Embark on a journey through familiar and new locations as you explore and discover magical beasts, customize your character and craft potions, master spell casting, upgrade talents and become the wizard you want to be. Experience Hogwarts in the 1800s. Your character is a student who holds the key to an ancient secret that threatens to tear the wizarding world apart. Make allies, battle Dark wizards, and ultimately decide the fate of the wizarding world. Your legacy is what you make of it. Live the Unwritten.",
-                                    "supported_languages": "['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Arabic', 'Japanese', 'Korean', 'Polish', 'Portuguese - Brazil', 'Russian', 'Simplified Chinese', 'Spanish - Latin America', 'Traditional Chinese']",
-                                    "full_audio_languages": "['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Japanese', 'Portuguese - Brazil', 'Spanish - Latin America', 'Traditional Chinese']",
-                                    "reviews": "",
-                                    "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/990080/header.jpg?t=1676056674",
-                                    "website": "https://www.hogwartslegacy.com/",
-                                    "support_url": "https://portkeygamessupport.wbgames.com/hc",
-                                    "support_email": "support@wbgames.com",
+                                    "dlc_count": 0,
+                                    "about_the_game": "THE NEW FANTASY ACTION RPG. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between. • A Vast World Full of Excitement A vast world where open fields with a variety of situations and huge dungeons with complex and three-dimensional designs are seamlessly connected. As you explore, the joy of discovering unknown and overwhelming threats await you, leading to a high sense of accomplishment. • Create your Own Character In addition to customizing the appearance of your character, you can freely combine the weapons, armor, and magic that you equip. You can develop your character according to your play style, such as increasing your muscle strength to become a strong warrior, or mastering magic. • An Epic Drama Born from a Myth A multilayered story told in fragments. An epic drama in which the various thoughts of the characters intersect in the Lands Between. • Unique Online Play that Loosely Connects You to Others In addition to multiplayer, where you can directly connect with other players and travel together, the game supports a unique asynchronous online element that allows you to feel the presence of others.",
+                                    "supported_languages": [
+                                        "English",
+                                        "French",
+                                        "German",
+                                        "Polish",
+                                        "Russian",
+                                        "Italian",
+                                        "Japanese",
+                                        "Spanish - Spain",
+                                        "Korean",
+                                        "Portuguese - Brazil",
+                                        "Simplified Chinese",
+                                        "Traditional Chinese",
+                                        "Spanish - Latin America",
+                                        "Thai",
+                                    ],
+                                    "full_audio_languages": [
+                                        "English",
+                                        "Traditional Chinese",
+                                    ],
+                                    "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg",
+                                    "website": "https://www.eldenring.jp/",
+                                    "support_url": "https://www.bandainamcoent.com/support",
+                                    "support_email": "",
                                     "windows": True,
                                     "mac": False,
                                     "linux": False,
-                                    "metacritic_score": 84,
-                                    "metacritic_url": "https://www.metacritic.com/game/pc/hogwarts-legacy?ftag=MCD-06-10aaa1f",
-                                    "user_score": 0,
-                                    "positive": 33521,
-                                    "negative": 2000,
-                                    "achievements": 45,
-                                    "recommendations": 55658,
-                                    "notes": "",
-                                    "average_playtime_forever": 661,
-                                    "average_playtime_two_weeks": 661,
-                                    "median_playtime_forever": 501,
-                                    "median_playtime_two_weeks": 501,
-                                    "developers": "Avalanche Software",
-                                    "publishers": "Warner Bros. Games",
-                                    "categories": "Single-player,Steam Achievements,Full controller support,In-App Purchases,Steam Cloud",
-                                    "genres": "Action,Adventure,RPG",
-                                    "tags": "Magic,Fantasy,Open World,Adventure,Singleplayer,RPG,Character Customization,Exploration,Story Rich,Third Person,Action-Adventure,Atmospheric,Action RPG,Action,Combat,Choices Matter,Puzzle,Great Soundtrack,Dark,Family Friendly",
-                                    "screenshots": "https://cdn.akamai.steamstatic.com/steam/apps/990080/ss_725bf58485beb4aa37a3a69c1e2baa69bf3e4653.1920x1080.jpg?t=1676056674,https://cdn.akamai.steamstatic.com/steam/apps/990080/ss_df93b5e8a183f7232d68be94ae78920a90de1443.1920x1080.jpg?t=1676056674,https://cdn.akamai.steamstatic.com/steam/apps/990080/ss_94058497bf0f8fabdde17ee8d59bece609a60663.1920x1080.jpg?t=1676056674,https://cdn.akamai.steamstatic.com/steam/apps/990080/ss_8e08976236d29b1897769257ac3c64e9264792a5.1920x1080.jpg?t=1676056674,https://cdn.akamai.steamstatic.com/steam/apps/990080/ss_d4930d675af053dc1e61a876a34fc003e85e261f.1920x1080.jpg?t=1676056674",
-                                    "movies": "http://cdn.akamai.steamstatic.com/steam/apps/256926764/movie_max.mp4?t=1674596507,http://cdn.akamai.steamstatic.com/steam/apps/256926763/movie_max.mp4?t=1674596513",
-                                },
+                                    "metacritic_score": 94,
+                                    "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring",
+                                    "positive_ratings": 460812,
+                                    "negative_ratings": 51238,
+                                    "achievements": 42,
+                                    "average_playtime": 5293,
+                                    "median_playtime": 4467,
+                                    "developers": ["FromSoftware Inc."],
+                                    "publishers": [
+                                        "Bandai Namco Entertainment",
+                                        "FromSoftware Inc.",
+                                    ],
+                                    "categories": [
+                                        "Single-player",
+                                        "Steam Achievements",
+                                        "Steam Trading Cards",
+                                        "Multi-player",
+                                        "Co-op",
+                                        "Full controller support",
+                                        "PvP",
+                                        "Online PvP",
+                                        "Online Co-op",
+                                    ],
+                                    "genres": ["RPG", "Action"],
+                                    "tags": [
+                                        "RPG",
+                                        "Difficult",
+                                        "Action",
+                                        "Third Person",
+                                        "Co-op",
+                                        "Singleplayer",
+                                        "Multiplayer",
+                                        "Open World",
+                                        "Great Soundtrack",
+                                        "Atmospheric",
+                                        "Violent",
+                                        "Action RPG",
+                                        "Fantasy",
+                                        "PvP",
+                                        "Online Co-Op",
+                                        "Walking Simulator",
+                                        "3D",
+                                        "Relaxing",
+                                        "Dark Fantasy",
+                                        "Souls-like",
+                                    ],
+                                }
                             ],
                         }
                     ]
                 },
-                schema=GameSerializer(),
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "count": openapi.Schema(
+                            type=openapi.TYPE_INTEGER,
+                        ),
+                        "next": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                        ),
+                        "previous": openapi.Schema(
+                            type=openapi.TYPE_STRING,
+                        ),
+                        "results": openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    "id": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "name": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "release_date": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "estimated_owners": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "peak_concurrent_users": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "required_age": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "price": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "dlc_count": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "about_the_game": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "supported_languages": openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    ),
+                                    "full_audio_languages": openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    ),
+                                    "header_image": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "website": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "support_url": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "support_email": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "windows": openapi.Schema(
+                                        type=openapi.TYPE_BOOLEAN,
+                                    ),
+                                    "mac": openapi.Schema(
+                                        type=openapi.TYPE_BOOLEAN,
+                                    ),
+                                    "linux": openapi.Schema(
+                                        type=openapi.TYPE_BOOLEAN,
+                                    ),
+                                    "metacritic_score": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "metacritic_url": openapi.Schema(
+                                        type=openapi.TYPE_STRING,
+                                    ),
+                                    "positive_ratings": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "negative_ratings": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "achievements": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "average_playtime": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "median_playtime": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER,
+                                    ),
+                                    "developers": openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    ),
+                                    "publishers": openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    ),
+                                    "categories": openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    ),
+                                    "genres": openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    ),
+                                    "tags": openapi.Schema(
+                                        type=openapi.TYPE_ARRAY,
+                                        items=openapi.Schema(type=openapi.TYPE_STRING),
+                                    ),
+                                },
+                            ),
+                        ),
+                    },
+                ),
             ),
             400: openapi.Response(
-                description="Bad Request",
+                description="Bad Request - Invalid parameter values provided",
             ),
         },
     )
@@ -252,13 +1121,16 @@ Returns:
         - Operation description
         - Query parameters (id or name)
         - Response schemas:
-            - 200: Successful response with reference game and recommended games
+            - 200: Successful response with:
+                - reference_game: Full details of the requested game
+                - recommended_games: Array of up to 5 similar games with their details
             - 400: Bad request when neither id nor name is provided
             - 404: Game not found error
 
 Note:
-    Either id or name must be provided, but not both. The response includes both the
-    reference game details and up to 5 recommended similar games.
+    Either id or name must be provided, but not both. The recommendations are generated
+    using a similarity algorithm that considers multiple game attributes including genres,
+    tags, ratings, and player statistics to find the most relevant suggestions.
 """
 
 
@@ -288,44 +1160,88 @@ def get_recommended_games_schema():
                 examples={
                     "application/json": {
                         "reference_game": {
-                            "id": 1979,
+                            "id": 5504,
                             "name": "ELDEN RING",
                             "release_date": "2022-02-24",
-                            "estimated_owners": "20000000 - 50000000",
-                            "peak_ccu": 46431,
+                            "estimated_owners": 50000000,
+                            "peak_concurrent_users": 46431,
                             "required_age": 16,
                             "price": "59.99",
                             "dlc_count": 0,
                             "about_the_game": "THE NEW FANTASY ACTION RPG. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between. • A Vast World Full of Excitement A vast world where open fields with a variety of situations and huge dungeons with complex and three-dimensional designs are seamlessly connected. As you explore, the joy of discovering unknown and overwhelming threats await you, leading to a high sense of accomplishment. • Create your Own Character In addition to customizing the appearance of your character, you can freely combine the weapons, armor, and magic that you equip. You can develop your character according to your play style, such as increasing your muscle strength to become a strong warrior, or mastering magic. • An Epic Drama Born from a Myth A multilayered story told in fragments. An epic drama in which the various thoughts of the characters intersect in the Lands Between. • Unique Online Play that Loosely Connects You to Others In addition to multiplayer, where you can directly connect with other players and travel together, the game supports a unique asynchronous online element that allows you to feel the presence of others.",
-                            "supported_languages": "['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Japanese', 'Korean', 'Polish', 'Portuguese - Brazil', 'Russian', 'Simplified Chinese', 'Spanish - Latin America', 'Thai', 'Traditional Chinese']",
-                            "full_audio_languages": "['English', 'Traditional Chinese']",
-                            "reviews": "“Put a ring on it.” 10/10 – IGN “An unmissable open-world masterpiece.” 10/10 – Gaming Bible “Exploration is jaw dropping.” 5/5 – Games Radar",
-                            "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg?t=1654259241",
-                            "website": "",
+                            "supported_languages": [
+                                "English",
+                                "French",
+                                "German",
+                                "Polish",
+                                "Russian",
+                                "Italian",
+                                "Japanese",
+                                "Spanish - Spain",
+                                "Korean",
+                                "Portuguese - Brazil",
+                                "Simplified Chinese",
+                                "Traditional Chinese",
+                                "Spanish - Latin America",
+                                "Thai",
+                            ],
+                            "full_audio_languages": [
+                                "English",
+                                "Traditional Chinese",
+                            ],
+                            "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg",
+                            "website": "https://www.eldenring.jp/",
                             "support_url": "https://www.bandainamcoent.com/support",
                             "support_email": "",
                             "windows": True,
                             "mac": False,
                             "linux": False,
                             "metacritic_score": 94,
-                            "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring?ftag=MCD-06-10aaa1f",
-                            "user_score": 0,
-                            "positive": 460812,
-                            "negative": 51238,
+                            "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring",
+                            "positive_ratings": 460812,
+                            "negative_ratings": 51238,
                             "achievements": 42,
-                            "recommendations": 391693,
-                            "notes": "",
-                            "average_playtime_forever": 5293,
-                            "average_playtime_two_weeks": 403,
-                            "median_playtime_forever": 4467,
-                            "median_playtime_two_weeks": 131,
-                            "developers": "FromSoftware Inc.",
-                            "publishers": "FromSoftware Inc.,Bandai Namco Entertainment",
-                            "categories": "Single-player,Multi-player,PvP,Online PvP,Co-op,Online Co-op,Steam Achievements,Full controller support,Steam Trading Cards",
-                            "genres": "Action,RPG",
-                            "tags": "Souls-like,Relaxing,Dark Fantasy,RPG,Difficult,Open World,Action RPG,Third Person,Fantasy,Multiplayer,Online Co-Op,Singleplayer,Action,Co-op,PvP,Violent,Atmospheric,3D,Great Soundtrack,Walking Simulator",
-                            "screenshots": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_e80a907c2c43337e53316c71555c3c3035a1343e.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_25cd489871907387c1b915022a96b196661b6e17.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_3e556415d1bda00d749b2166ced264bec76f06ee.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_ae44317e3bd07b7690b4d62cc5d0d1df30367a91.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_c372274833ae6e5437b952fa1979430546a43ad9.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_e87a3e84890ab19f8995566e62762d5f8ed39315.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_3aec1455923ef49f4e777c2a94dbcd0256f77eb0.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_b87601dee58f4dbc36e40a8d803dc6a53ceefe07.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_8b58d96262fb0d62a482621b86c6ff85f4f57997.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_1011610a0e330c41a75ffd0b3a9a1bac3205c46a.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_41e2e8f3b0ad631e929e0c2ec3d1f21de883e98c.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_7dcd7e6c42024c2d5a5a31d758039ded13a47527.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_abd681cde3402155a35edb82919b7602cc7ec338.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_0b6e59057b02392b21dde62b4dde65d447e1fa3c.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_7523a8fc7775ae65cabd94d092ebecbd963258b6.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_a176eea67cd421307a6c627514129237d6202890.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_ebb332e63dfab864c3bf3c3b1001b69f4da25f9f.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_24bd769aeffacd45fcd3a7ae9efde22b24b5fca9.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_75f25974c20b8704fe5ee246f74896b550088d3e.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_fb2957cce97f4633bc743b561f76865e6993c781.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_35ff7ed4b67e2bb73e54f6c10a4f8d9390c16203.1920x1080.jpg?t=1654259241",
-                            "movies": "http://cdn.akamai.steamstatic.com/steam/apps/256889452/movie_max.mp4?t=1654109247,http://cdn.akamai.steamstatic.com/steam/apps/256875477/movie_max.mp4?t=1645743469,http://cdn.akamai.steamstatic.com/steam/apps/256864891/movie_max.mp4?t=1645830855,http://cdn.akamai.steamstatic.com/steam/apps/256859890/movie_max.mp4?t=1641845061,http://cdn.akamai.steamstatic.com/steam/apps/256839312/movie_max.mp4?t=1641422486",
+                            "average_playtime": 5293,
+                            "median_playtime": 4467,
+                            "developers": ["FromSoftware Inc."],
+                            "publishers": [
+                                "Bandai Namco Entertainment",
+                                "FromSoftware Inc.",
+                            ],
+                            "categories": [
+                                "Single-player",
+                                "Steam Achievements",
+                                "Steam Trading Cards",
+                                "Multi-player",
+                                "Co-op",
+                                "Full controller support",
+                                "PvP",
+                                "Online PvP",
+                                "Online Co-op",
+                            ],
+                            "genres": ["RPG", "Action"],
+                            "tags": [
+                                "RPG",
+                                "Difficult",
+                                "Action",
+                                "Third Person",
+                                "Co-op",
+                                "Singleplayer",
+                                "Multiplayer",
+                                "Open World",
+                                "Great Soundtrack",
+                                "Atmospheric",
+                                "Violent",
+                                "Action RPG",
+                                "Fantasy",
+                                "PvP",
+                                "Online Co-Op",
+                                "Walking Simulator",
+                                "3D",
+                                "Relaxing",
+                                "Dark Fantasy",
+                                "Souls-like",
+                            ],
                         },
                         "recommended_games": [
                             {
@@ -371,366 +1287,206 @@ def get_recommended_games_schema():
                         ],
                     }
                 },
-                schema=GameSerializer(),
+                schema=openapi.Schema(
+                    type=openapi.TYPE_OBJECT,
+                    properties={
+                        "reference_game": openapi.Schema(
+                            type=openapi.TYPE_OBJECT,
+                            properties={
+                                "id": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=5504
+                                ),
+                                "name": openapi.Schema(
+                                    type=openapi.TYPE_STRING, example="ELDEN RING"
+                                ),
+                                "release_date": openapi.Schema(
+                                    type=openapi.TYPE_STRING, example="2022-02-24"
+                                ),
+                                "estimated_owners": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=50000000
+                                ),
+                                "peak_concurrent_users": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=46431
+                                ),
+                                "required_age": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=16
+                                ),
+                                "price": openapi.Schema(
+                                    type=openapi.TYPE_STRING, example="59.99"
+                                ),
+                                "dlc_count": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER, example=0
+                                ),
+                                "about_the_game": openapi.Schema(
+                                    type=openapi.TYPE_STRING
+                                ),
+                                "supported_languages": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "full_audio_languages": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "header_image": openapi.Schema(
+                                    type=openapi.TYPE_STRING
+                                ),
+                                "website": openapi.Schema(type=openapi.TYPE_STRING),
+                                "support_url": openapi.Schema(type=openapi.TYPE_STRING),
+                                "support_email": openapi.Schema(
+                                    type=openapi.TYPE_STRING
+                                ),
+                                "windows": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                "mac": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                "linux": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                "metacritic_score": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER
+                                ),
+                                "metacritic_url": openapi.Schema(
+                                    type=openapi.TYPE_STRING
+                                ),
+                                "positive_ratings": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER
+                                ),
+                                "negative_ratings": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER
+                                ),
+                                "achievements": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER
+                                ),
+                                "average_playtime": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER
+                                ),
+                                "median_playtime": openapi.Schema(
+                                    type=openapi.TYPE_INTEGER
+                                ),
+                                "developers": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "publishers": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "categories": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "genres": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                                "tags": openapi.Schema(
+                                    type=openapi.TYPE_ARRAY,
+                                    items=openapi.Schema(type=openapi.TYPE_STRING),
+                                ),
+                            },
+                        ),
+                        "recommended_games": openapi.Schema(
+                            type=openapi.TYPE_ARRAY,
+                            items=openapi.Schema(
+                                type=openapi.TYPE_OBJECT,
+                                properties={
+                                    "id": openapi.Schema(type=openapi.TYPE_INTEGER),
+                                    "name": openapi.Schema(type=openapi.TYPE_STRING),
+                                    "release_date": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "estimated_owners": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "peak_ccu": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "required_age": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "price": openapi.Schema(type=openapi.TYPE_STRING),
+                                    "dlc_count": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "about_the_game": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "supported_languages": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "full_audio_languages": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "reviews": openapi.Schema(type=openapi.TYPE_STRING),
+                                    "header_image": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "website": openapi.Schema(type=openapi.TYPE_STRING),
+                                    "support_url": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "support_email": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "windows": openapi.Schema(
+                                        type=openapi.TYPE_BOOLEAN
+                                    ),
+                                    "mac": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                    "linux": openapi.Schema(type=openapi.TYPE_BOOLEAN),
+                                    "metacritic_score": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "metacritic_url": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "user_score": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "positive": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "negative": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "achievements": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "recommendations": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "notes": openapi.Schema(type=openapi.TYPE_STRING),
+                                    "average_playtime_forever": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "average_playtime_two_weeks": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "median_playtime_forever": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "median_playtime_two_weeks": openapi.Schema(
+                                        type=openapi.TYPE_INTEGER
+                                    ),
+                                    "developers": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "publishers": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "categories": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "genres": openapi.Schema(type=openapi.TYPE_STRING),
+                                    "tags": openapi.Schema(type=openapi.TYPE_STRING),
+                                    "screenshots": openapi.Schema(
+                                        type=openapi.TYPE_STRING
+                                    ),
+                                    "movies": openapi.Schema(type=openapi.TYPE_STRING),
+                                },
+                            ),
+                        ),
+                    },
+                ),
             ),
             400: openapi.Response(
                 description="Bad Request - Neither id nor name provided",
-            ),
-            404: openapi.Response(
-                description="Game not found",
-            ),
-        },
-    )
-
-
-"""
-Swagger/OpenAPI schema decorator for game creation endpoint.
-
-This decorator provides detailed schema information for the POST endpoint that creates a new game.
-It specifies the expected request body structure and possible response scenarios.
-
-Request Body:
-    - name (str): Name of the game
-    - release_date (date): Release date in YYYY-MM-DD format
-    - estimated_owners (str): Estimated range of game owners
-    - peak_ccu (int): Peak concurrent users
-    - required_age (int): Required age to play
-    - price (float): Game price
-    - dlc_count (int): Number of DLCs
-    - about_the_game (str): Game description
-    - supported_languages (str): List of supported languages
-    - full_audio_languages (str): List of languages with full audio support
-    - reviews (str): Game reviews
-    - header_image (str): URL of the game's header image
-    - website (str): Game's official website
-    - support_url (str): Support page URL
-    - support_email (str): Support email address
-    - windows/mac/linux (bool): Platform availability
-    - metacritic_score (int): Metacritic rating
-    - metacritic_url (str): Metacritic page URL
-    - user_score (float): User rating
-    - positive/negative (int): Number of positive/negative reviews
-    - achievements (int): Number of achievements
-    - recommendations (int): Number of recommendations
-    - notes (str): Additional notes
-    - average_playtime_forever/two_weeks (str): Average playtime statistics
-    - median_playtime_forever/two_weeks (str): Median playtime statistics
-    - developers (str): Game developers
-    - publishers (str): Game publishers
-    - categories (str): Game categories
-    - genres (str): Game genres
-    - tags (str): Game tags
-    - screenshots (str): Screenshot URLs
-    - movies (str): Movie/trailer URLs
-
-Returns:
-    swagger_auto_schema: Decorator with complete schema definition for game creation
-
-Responses:
-    201: Game created successfully
-    400: Invalid request data
-"""
-
-
-def create_game_schema():
-    return swagger_auto_schema(
-        method="post",
-        operation_description="Create a new game.",
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "name": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    example="Elden Ring: Shadow of the Erdtree",
-                ),
-                "release_date": openapi.Schema(
-                    type=openapi.TYPE_STRING, format="date", example="2024-06-12"
-                ),
-                "estimated_owners": openapi.Schema(
-                    type=openapi.TYPE_STRING, example="20000000 - 50000000"
-                ),
-                "peak_ccu": openapi.Schema(type=openapi.TYPE_INTEGER, example=781261),
-                "required_age": openapi.Schema(type=openapi.TYPE_INTEGER, example=16),
-                "price": openapi.Schema(
-                    type=openapi.TYPE_NUMBER, format="float", example=39.99
-                ),
-                "dlc_count": openapi.Schema(type=openapi.TYPE_INTEGER, example=0),
-                "about_the_game": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    example="The ELDEN RING Shadow of the Erdtree expansion features an all-new story set in the Land of Shadow imbued with mystery, perilous dungeons, and new enemies, weapons and equipment.",
-                ),
-                "supported_languages": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    example="['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Japanese', 'Korean', 'Polish', 'Portuguese - Brazil', 'Russian', 'Simplified Chinese', 'Spanish - Latin America', 'Thai', 'Traditional Chinese']",
-                ),
-                "full_audio_languages": openapi.Schema(
-                    type=openapi.TYPE_STRING, example="['English']"
-                ),
-                "reviews": openapi.Schema(type=openapi.TYPE_STRING, example="-"),
-                "header_image": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    example="https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg?t=1654259241",
-                ),
-                "website": openapi.Schema(
-                    type=openapi.TYPE_STRING, example="https://eldenring.com/"
-                ),
-                "support_url": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    example="https://www.bandainamcoent.com/support",
-                ),
-                "support_email": openapi.Schema(
-                    type=openapi.TYPE_STRING, example="bandainamcoent@support.com"
-                ),
-                "windows": openapi.Schema(type=openapi.TYPE_BOOLEAN, example=True),
-                "mac": openapi.Schema(type=openapi.TYPE_BOOLEAN, example=True),
-                "linux": openapi.Schema(type=openapi.TYPE_BOOLEAN, example=True),
-                "metacritic_score": openapi.Schema(
-                    type=openapi.TYPE_INTEGER, example=92
-                ),
-                "metacritic_url": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    example="https://www.metacritic.com/game/pc/elden-ring-shadow-of-the-erdtree?ftag=MCD-06-10aaa1f",
-                ),
-                "user_score": openapi.Schema(
-                    type=openapi.TYPE_NUMBER, format="float", example=70
-                ),
-                "positive": openapi.Schema(type=openapi.TYPE_INTEGER, example=70501),
-                "negative": openapi.Schema(type=openapi.TYPE_INTEGER, example=29821),
-                "achievements": openapi.Schema(type=openapi.TYPE_INTEGER, example=0),
-                "recommendations": openapi.Schema(
-                    type=openapi.TYPE_INTEGER, example="-"
-                ),
-                "notes": openapi.Schema(type=openapi.TYPE_STRING, example="-"),
-                "average_playtime_forever": openapi.Schema(
-                    type=openapi.TYPE_STRING, example=5293
-                ),
-                "average_playtime_two_weeks": openapi.Schema(
-                    type=openapi.TYPE_STRING, example=403
-                ),
-                "median_playtime_forever": openapi.Schema(
-                    type=openapi.TYPE_STRING, example=4467
-                ),
-                "median_playtime_two_weeks": openapi.Schema(
-                    type=openapi.TYPE_STRING, example=131
-                ),
-                "developers": openapi.Schema(
-                    type=openapi.TYPE_STRING, example="FromSoftware, Inc."
-                ),
-                "publishers": openapi.Schema(
-                    type=openapi.TYPE_STRING, example="Bandai Namco Entertainment"
-                ),
-                "categories": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    example="Single-player,Multi-player,PvP,Online PvP,Co-op,Online Co-op,Steam Achievements,Full controller support,Steam Trading Cards",
-                ),
-                "genres": openapi.Schema(
-                    type=openapi.TYPE_STRING, example="Action,RPG"
-                ),
-                "tags": openapi.Schema(
-                    type=openapi.TYPE_STRING,
-                    example="Action,RPG,Souls-like,Difficult,Fantasy",
-                ),
-                "screenshots": openapi.Schema(type=openapi.TYPE_STRING, example="-"),
-                "movies": openapi.Schema(type=openapi.TYPE_STRING, example="-"),
-            },
-        ),
-        responses={
-            201: openapi.Response(
-                description="Game created successfully",
-                examples={
-                    "application/json": {
-                        "name": "Elden Ring: Shadow of the Erdtree",
-                        "release_date": "2024-06-12",
-                        "estimated_owners": "20000000 - 50000000",
-                        "peak_ccu": 781261,
-                        "required_age": 16,
-                        "price": 39.99,
-                        "dlc_count": 0,
-                        "about_the_game": "The ELDEN RING Shadow of the Erdtree expansion features an all-new story set in the Land of Shadow imbued with mystery, perilous dungeons, and new enemies, weapons and equipment.",
-                        "supported_languages": "['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Japanese', 'Korean', 'Polish', 'Portuguese - Brazil', 'Russian', 'Simplified Chinese', 'Spanish - Latin America', 'Thai', 'Traditional Chinese']",
-                        "full_audio_languages": "['English']",
-                        "reviews": "-",
-                        "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg?t=1654259241",
-                        "website": "https://eldenring.com/",
-                        "support_url": "https://www.bandainamcoent.com/support",
-                        "support_email": "bandainamcoent@support.com",
-                        "windows": True,
-                        "mac": True,
-                        "linux": True,
-                        "metacritic_score": 92,
-                        "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring-shadow-of-the-erdtree?ftag=MCD-06-10aaa1f",
-                        "user_score": 70,
-                        "positive": 70501,
-                        "negative": 29821,
-                        "achievements": 0,
-                        "recommendations": 0,
-                        "notes": "-",
-                        "average_playtime_forever": "5293",
-                        "average_playtime_two_weeks": "403",
-                        "median_playtime_forever": "4467",
-                        "median_playtime_two_weeks": "131",
-                        "developers": "FromSoftware, Inc.",
-                        "publishers": "Bandai Namco Entertainment",
-                        "categories": "Single-player,Multi-player,PvP,Online PvP,Co-op,Online Co-op,Steam Achievements,Full controller support,Steam Trading Cards",
-                        "genres": "Action,RPG",
-                        "tags": "Action,RPG,Souls-like,Difficult,Fantasy",
-                        "screenshots": "-",
-                        "movies": "-",
-                    }
-                },
-                schema=GameSerializer(),
-            ),
-            400: openapi.Response(
-                description="Invalid request data",
-            ),
-        },
-    )
-
-
-""""
-Returns a swagger_auto_schema decorator for the game update endpoint.
-
-This schema defines:
-- PATCH method for updating games
-- Query parameters for game identification (id or name)
-- Request body specification for updatable fields
-- Response specifications for success and error cases
-
-Returns:
-    swagger_auto_schema: A decorator that provides OpenAPI/Swagger documentation
-"""
-
-
-def update_game_schema():
-    return swagger_auto_schema(
-        methods=["patch"],
-        operation_description="Update an existing game by ID or name",
-        manual_parameters=[
-            openapi.Parameter(
-                "id",
-                openapi.IN_QUERY,
-                description="The unique identifier of the game to update",
-                type=openapi.TYPE_INTEGER,
-                required=False,
-            ),
-            openapi.Parameter(
-                "name",
-                openapi.IN_QUERY,
-                description="The name of the game to update",
-                type=openapi.TYPE_STRING,
-                required=False,
-            ),
-        ],
-        request_body=openapi.Schema(
-            type=openapi.TYPE_OBJECT,
-            properties={
-                "website": openapi.Schema(
-                    type=openapi.TYPE_STRING, example="https://www.eldenring.jp/"
-                ),
-            },
-        ),
-        responses={
-            200: openapi.Response(
-                description="Game updated successfully",
-                examples={
-                    "application/json": {
-                        "message": "Game updated successfully",
-                        "game": {
-                            "application/json": {
-                                "id": 1979,
-                                "name": "ELDEN RING",
-                                "release_date": "2022-02-24",
-                                "estimated_owners": "20000000 - 50000000",
-                                "peak_ccu": 46431,
-                                "required_age": 16,
-                                "price": "59.99",
-                                "dlc_count": 0,
-                                "about_the_game": "THE NEW FANTASY ACTION RPG. Rise, Tarnished, and be guided by grace to brandish the power of the Elden Ring and become an Elden Lord in the Lands Between. • A Vast World Full of Excitement A vast world where open fields with a variety of situations and huge dungeons with complex and three-dimensional designs are seamlessly connected. As you explore, the joy of discovering unknown and overwhelming threats await you, leading to a high sense of accomplishment. • Create your Own Character In addition to customizing the appearance of your character, you can freely combine the weapons, armor, and magic that you equip. You can develop your character according to your play style, such as increasing your muscle strength to become a strong warrior, or mastering magic. • An Epic Drama Born from a Myth A multilayered story told in fragments. An epic drama in which the various thoughts of the characters intersect in the Lands Between. • Unique Online Play that Loosely Connects You to Others In addition to multiplayer, where you can directly connect with other players and travel together, the game supports a unique asynchronous online element that allows you to feel the presence of others.",
-                                "supported_languages": "['English', 'French', 'Italian', 'German', 'Spanish - Spain', 'Japanese', 'Korean', 'Polish', 'Portuguese - Brazil', 'Russian', 'Simplified Chinese', 'Spanish - Latin America', 'Thai', 'Traditional Chinese']",
-                                "full_audio_languages": "['English', 'Traditional Chinese']",
-                                "reviews": "“Put a ring on it.” 10/10 – IGN “An unmissable open-world masterpiece.” 10/10 – Gaming Bible “Exploration is jaw dropping.” 5/5 – Games Radar",
-                                "header_image": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/header.jpg?t=1654259241",
-                                "website": "https://www.eldenring.jp/",
-                                "support_url": "https://www.bandainamcoent.com/support",
-                                "support_email": "",
-                                "windows": True,
-                                "mac": False,
-                                "linux": False,
-                                "metacritic_score": 94,
-                                "metacritic_url": "https://www.metacritic.com/game/pc/elden-ring?ftag=MCD-06-10aaa1f",
-                                "user_score": 0,
-                                "positive": 460812,
-                                "negative": 51238,
-                                "achievements": 42,
-                                "recommendations": 391693,
-                                "notes": "",
-                                "average_playtime_forever": 5293,
-                                "average_playtime_two_weeks": 403,
-                                "median_playtime_forever": 4467,
-                                "median_playtime_two_weeks": 131,
-                                "developers": "FromSoftware Inc.",
-                                "publishers": "FromSoftware Inc.,Bandai Namco Entertainment",
-                                "categories": "Single-player,Multi-player,PvP,Online PvP,Co-op,Online Co-op,Steam Achievements,Full controller support,Steam Trading Cards",
-                                "genres": "Action,RPG",
-                                "tags": "Souls-like,Relaxing,Dark Fantasy,RPG,Difficult,Open World,Action RPG,Third Person,Fantasy,Multiplayer,Online Co-Op,Singleplayer,Action,Co-op,PvP,Violent,Atmospheric,3D,Great Soundtrack,Walking Simulator",
-                                "screenshots": "https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_e80a907c2c43337e53316c71555c3c3035a1343e.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_25cd489871907387c1b915022a96b196661b6e17.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_3e556415d1bda00d749b2166ced264bec76f06ee.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_ae44317e3bd07b7690b4d62cc5d0d1df30367a91.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_c372274833ae6e5437b952fa1979430546a43ad9.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_e87a3e84890ab19f8995566e62762d5f8ed39315.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_3aec1455923ef49f4e777c2a94dbcd0256f77eb0.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_b87601dee58f4dbc36e40a8d803dc6a53ceefe07.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_8b58d96262fb0d62a482621b86c6ff85f4f57997.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_1011610a0e330c41a75ffd0b3a9a1bac3205c46a.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_41e2e8f3b0ad631e929e0c2ec3d1f21de883e98c.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_7dcd7e6c42024c2d5a5a31d758039ded13a47527.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_abd681cde3402155a35edb82919b7602cc7ec338.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_0b6e59057b02392b21dde62b4dde65d447e1fa3c.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_7523a8fc7775ae65cabd94d092ebecbd963258b6.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_a176eea67cd421307a6c627514129237d6202890.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_ebb332e63dfab864c3bf3c3b1001b69f4da25f9f.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_24bd769aeffacd45fcd3a7ae9efde22b24b5fca9.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_75f25974c20b8704fe5ee246f74896b550088d3e.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_fb2957cce97f4633bc743b561f76865e6993c781.1920x1080.jpg?t=1654259241,https://cdn.akamai.steamstatic.com/steam/apps/1245620/ss_35ff7ed4b67e2bb73e54f6c10a4f8d9390c16203.1920x1080.jpg?t=1654259241",
-                                "movies": "http://cdn.akamai.steamstatic.com/steam/apps/256889452/movie_max.mp4?t=1654109247,http://cdn.akamai.steamstatic.com/steam/apps/256875477/movie_max.mp4?t=1645743469,http://cdn.akamai.steamstatic.com/steam/apps/256864891/movie_max.mp4?t=1645830855,http://cdn.akamai.steamstatic.com/steam/apps/256859890/movie_max.mp4?t=1641845061,http://cdn.akamai.steamstatic.com/steam/apps/256839312/movie_max.mp4?t=1641422486",
-                            }
-                        },
-                    }
-                },
-                schema=GameSerializer(),
-            ),
-            400: openapi.Response(
-                description="Invalid request data",
-            ),
-            404: openapi.Response(
-                description="Game not found",
-            ),
-        },
-    )
-
-
-"""Generate OpenAPI/Swagger documentation for the delete game endpoint.
-
-This function creates a swagger_auto_schema decorator that documents the DELETE
-endpoint for games. It specifies that games can be deleted either by their ID
-or name via query parameters.
-
-Parameters:
-    None
-
-Returns:
-    swagger_auto_schema: A decorator containing the OpenAPI specification including:
-        - DELETE method specification
-        - Query parameters for game ID and name
-        - Response specifications for success and error cases
-"""
-
-
-def delete_game_schema():
-    return swagger_auto_schema(
-        method="delete",
-        operation_description="Delete a game by ID or name.",
-        manual_parameters=[
-            openapi.Parameter(
-                "id",
-                openapi.IN_QUERY,
-                description="The unique identifier of the game to delete",
-                type=openapi.TYPE_INTEGER,
-                required=False,
-            ),
-            openapi.Parameter(
-                "name",
-                openapi.IN_QUERY,
-                description="The name of the game to delete",
-                type=openapi.TYPE_STRING,
-                required=False,
-            ),
-        ],
-        responses={
-            204: openapi.Response(
-                description="Game deleted successfully",
             ),
             404: openapi.Response(
                 description="Game not found",

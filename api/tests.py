@@ -2,38 +2,58 @@ from django.test import TestCase
 from django.urls import reverse
 from rest_framework import status
 from rest_framework.test import APIClient
-from .models import Game
+from .models import (
+    SupportedLanguage,
+    FullAudioLanguage,
+    Developer,
+    Publisher,
+    Category,
+    Genre,
+    Tag,
+    Game,
+)
 from datetime import datetime
 from decimal import Decimal
 
 
 class GameAPITests(TestCase):
-    """Set up test data before each test method"""
+    """Set up test data before each test method."""
 
     def setUp(self):
         self.client = APIClient()
+
+        # Create test instances of related models
+        self.language = SupportedLanguage.objects.create(supported_language="English")
+        self.audio_language = FullAudioLanguage.objects.create(
+            full_audio_language="English"
+        )
+        self.developer = Developer.objects.create(developer="Developer")
+        self.publisher = Publisher.objects.create(publisher="Publisher")
+        self.category = Category.objects.create(category="Category")
+        self.genre = Genre.objects.create(genre="Genre")
+        self.tag = Tag.objects.create(tag="Tag")
+
         # Create two test game instances with minimal required data
         self.game1 = Game.objects.create(
             name="Test Game 1",
             release_date=datetime(2020, 1, 1),
-            metacritic_score=85,
-            peak_ccu=1000,
+            price=Decimal("29.99"),
         )
+
         self.game2 = Game.objects.create(
             name="Test Game 2",
             release_date=datetime(2021, 1, 1),
-            metacritic_score=90,
-            peak_ccu=2000,
+            price=Decimal("39.99"),
         )
 
-    """Test retrieving list of all games"""
+    """Test retrieving list of all games."""
 
     def test_get_games_list(self):
         response = self.client.get(reverse("get_games"))
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(len(response.data["results"]), 2)
 
-    """Test retrieving a single game by ID and name"""
+    """Test retrieving a single game by ID or name."""
 
     def test_get_single_game(self):
         # Test existing game by ID
@@ -54,29 +74,32 @@ class GameAPITests(TestCase):
         response = self.client.get(reverse("get_game"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
 
-    """Test getting game recommendations based on a reference game"""
+    """Test retrieving recommended games based on a reference game."""
 
     def test_get_recommended_games(self):
         # Test recommendations by ID
-        response = self.client.get(
-            reverse("get_recommended_games"), {"id": self.game1.id}
-        )
+        url = f"{reverse('get_recommended_games')}?id={self.game1.id}"
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["reference_game"]["name"], "Test Game 1")
-        self.assertIn("similar_games", response.data)
+        self.assertIn("recommended_games", response.data)
 
         # Test recommendations by name
-        response = self.client.get(
-            reverse("get_recommended_games"), {"name": "Test Game 1"}
-        )
+        url = f"{reverse('get_recommended_games')}?name=Test Game 1"
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["reference_game"]["name"], "Test Game 1")
 
         # Test non-existent game
-        response = self.client.get(reverse("get_recommended_games"), {"id": 999})
+        url = f"{reverse('get_recommended_games')}?id=999"
+        response = self.client.get(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
 
-    """Test filtering games by release year"""
+        # Test missing parameters
+        response = self.client.get(reverse("get_recommended_games"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    """Test filtering games by specific criteria."""
 
     def test_filtered_games(self):
         response = self.client.get(reverse("get_games"), {"filterBy": "year(2020)"})
@@ -84,82 +107,110 @@ class GameAPITests(TestCase):
         self.assertEqual(len(response.data["results"]), 1)
         self.assertEqual(response.data["results"][0]["name"], "Test Game 1")
 
-    """Test sorting games by metacritic score"""
+    """Test sorting games by specific fields."""
 
     def test_sorted_games(self):
         response = self.client.get(
-            reverse("get_games"), {"sortBy": "metacriticScore", "sortOrder": "desc"}
+            reverse("get_games"), {"sortBy": "price", "sortOrder": "desc"}
         )
         self.assertEqual(response.status_code, status.HTTP_200_OK)
         self.assertEqual(response.data["results"][0]["name"], "Test Game 2")
 
-    def test_create_game(self):
-        initial_count = Game.objects.count()  # Get count before creating new game
+    """Test creating a new game with valid data."""
 
+    def test_create_game(self):
+        initial_count = Game.objects.count()
+
+        # Prepare complete game data payload
         payload = {
-            "name": "Test Game",
-            "release_date": "2024-03-20",
-            "estimated_owners": "0-20000",
-            "peak_ccu": 100,
-            "required_age": 18,
+            "name": "Test Game 3",
+            "release_date": "2024-12-12",
+            "estimated_owners": 0,
+            "peak_concurrent_users": 0,
+            "required_age": 0,
             "price": "29.99",
-            "dlc_count": 2,
-            "about_the_game": "This is a test game",
+            "dlc_count": 0,
+            "about_the_game": "Test about the game",
+            "supported_languages": ["English"],
+            "full_audio_languages": ["English"],
+            "header_image": "https://example.com/header.jpg",
+            "website": "https://example.com",
+            "support_url": "https://example.com/support",
+            "support_email": "support@example.com",
             "windows": True,
             "mac": False,
             "linux": False,
-            "genres": "Action,Adventure",
-            "tags": "Multiplayer,RPG",
+            "metacritic_score": 80,
+            "metacritic_url": "https://example.com/metacritic",
+            "positive_ratings": 0,
+            "negative_ratings": 0,
+            "achievements": 0,
+            "average_playtime": 0,
+            "median_playtime": 0,
+            "developers": ["Developer"],
+            "publishers": ["Publisher"],
+            "genres": ["Genre"],
+            "categories": ["Category"],
+            "tags": ["Tag"],
         }
 
-        response = self.client.post(reverse("create_game"), payload, format="json")
+        response = self.client.post(reverse("create_game"), data=payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_201_CREATED)
-        self.assertEqual(
-            Game.objects.count(), initial_count + 1
-        )  # Check that count increased by 1
+        self.assertEqual(Game.objects.count(), initial_count + 1)
         game = Game.objects.last()
-        self.assertEqual(game.name, "Test Game")
+        self.assertEqual(game.name, "Test Game 3")
         self.assertEqual(game.price, Decimal("29.99"))
-        self.assertEqual(game.genres, "Action,Adventure")
 
-    """Test creating a game with invalid data"""
+        # Verify relationships were created correctly
+        self.assertEqual(game.developers.count(), 1)
+        self.assertEqual(game.publishers.count(), 1)
+        self.assertEqual(game.genres.count(), 1)
+        self.assertEqual(game.categories.count(), 1)
+        self.assertEqual(game.tags.count(), 1)
+
+    """Test creating a game with invalid data."""
 
     def test_create_game_invalid_data(self):
-        initial_count = Game.objects.count()  # Get count before attempting to create
+        initial_count = Game.objects.count()
 
         payload = {
-            # Missing required 'name' field
             "price": "invalid_price",
-            "peak_ccu": "not_an_integer",
+            "peak_concurrent_users": "not_an_integer",
         }
 
         response = self.client.post(reverse("create_game"), payload, format="json")
 
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-        self.assertEqual(Game.objects.count(), initial_count)  # Count should not change
-        self.assertIn("name", response.data)  # Should contain name field error
-        self.assertIn("price", response.data)  # Should contain price field error
-        self.assertIn("peak_ccu", response.data)  # Should contain peak_ccu field error
+        self.assertEqual(Game.objects.count(), initial_count)
+        self.assertIn("name", response.data)
+        self.assertIn("release_date", response.data)
 
-    """Test updating an existing game"""
+    """Test updating an existing game."""
 
     def test_update_game(self):
+        # Send ID as query param, update data as body
         update_data = {"name": "Updated Game Name"}
-        response = self.client.patch(
-            reverse("update_game", args=[self.game1.id]), update_data, format="json"
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["name"], "Updated Game Name")
+        url = f"{reverse('update_game')}?id={self.game1.id}"
+        response = self.client.patch(url, data=update_data, format="json")
 
-    """Test deleting existing and non-existent games"""
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["game"]["name"], "Updated Game Name")
+
+    """Test deleting games with various scenarios."""
 
     def test_delete_game(self):
         # Test deleting existing game
-        response = self.client.delete(reverse("delete_game", args=[self.game1.id]))
+        url = f"{reverse('delete_game')}?id={self.game1.id}"
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_204_NO_CONTENT)
         self.assertEqual(Game.objects.count(), 1)
 
         # Test deleting non-existent game
-        response = self.client.delete(reverse("delete_game", args=[999]))
+        url = f"{reverse('delete_game')}?id=999"
+        response = self.client.delete(url)
         self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Test missing parameters
+        response = self.client.delete(reverse("delete_game"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

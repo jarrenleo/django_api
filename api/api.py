@@ -20,15 +20,15 @@ Retrieve a single game by ID or name.
 Parameters:
     request: HTTP request object
         Query Parameters:
-            id (optional): The unique identifier of the game
-            name (optional): The name of the game to search for
+            id (optional): The unique identifier of the game to retrieve
+            name (optional): The name of the game to search for (case-insensitive partial match)
 
 Returns:
     Response object with:
         - Game data if found
         - HTTP 200 if successful
-        - HTTP 400 if neither id nor name provided
-        - HTTP 404 if game not found
+        - HTTP 400 if neither id nor name parameter is provided
+        - HTTP 404 if no game matches the provided id or name
 """
 
 
@@ -61,29 +61,176 @@ def get_game(request):
 
 
 """
+Create a new game with the provided data.
+
+Parameters:
+    request: HTTP request object
+        Body: JSON object containing game data
+            Required fields:
+                - name: Game title
+                - release_date: Release date (YYYY-MM-DD)
+                - price: Game price (decimal)
+            Optional fields:
+                - All other Game model fields
+
+Returns:
+    Response object with:
+        - message: Success message
+        - game: Complete created game object
+        - HTTP 201 if successfully created
+        - HTTP 400 if validation fails with error details
+"""
+
+
+@create_game_schema()
+@api_view(["POST"])
+def create_game(request):
+    serializer = GameSerializer(data=request.data)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {"message": "Game created successfully", "game": serializer.data},
+            status=status.HTTP_201_CREATED,
+        )
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+"""
+Update an existing game by ID or name.
+
+Parameters:
+    request: HTTP request object
+        Query Parameters:
+            id (optional): The unique identifier of the game to update
+            name (optional): The name of the game to update (case-insensitive partial match)
+        Body: JSON object containing fields to update
+
+Returns:
+    Response object with:
+        - message: Success message
+        - game: Complete updated game object
+        - HTTP 200 if successful
+        - HTTP 400 if validation fails or no id/name provided
+        - HTTP 404 if game not found
+"""
+
+
+@update_game_schema()
+@api_view(["PATCH"])
+def update_game(request):
+    pk = request.query_params.get("id")
+    name = request.query_params.get("name")
+
+    if not pk and not name:
+        return Response(
+            {"message": "Please provide either id or name parameter"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        if pk:
+            game = Game.objects.get(pk=pk)
+        else:
+            game = Game.objects.filter(name__icontains=name).first()
+            if not game:
+                raise Game.DoesNotExist
+    except Game.DoesNotExist:
+        return Response(
+            {"message": "Game does not exist"}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    serializer = GameSerializer(game, data=request.data, partial=True)
+
+    if serializer.is_valid():
+        serializer.save()
+        return Response(
+            {"message": "Game updated successfully", "game": serializer.data},
+            status=status.HTTP_200_OK,
+        )
+
+    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
+
+
+"""
+Delete a game by ID or name.
+
+Parameters:
+    request: HTTP request object
+        Query Parameters:
+            id (optional): The unique identifier of the game to delete
+            name (optional): The name of the game to delete (case-insensitive partial match)
+
+Returns:
+    Response object with:
+        - message: Success message
+        - HTTP 204 if successfully deleted
+        - HTTP 400 if no id/name provided
+        - HTTP 404 if game not found
+"""
+
+
+@delete_game_schema()
+@api_view(["DELETE"])
+def delete_game(request):
+    pk = request.query_params.get("id")
+    name = request.query_params.get("name")
+
+    if not pk and not name:
+        return Response(
+            {"message": "Please provide either id or name parameter"},
+            status=status.HTTP_400_BAD_REQUEST,
+        )
+
+    try:
+        if pk:
+            game = Game.objects.get(pk=pk)
+        else:
+            game = Game.objects.filter(name__icontains=name).first()
+            if not game:
+                raise Game.DoesNotExist
+    except Game.DoesNotExist:
+        return Response(
+            {"message": "Game does not exist"}, status=status.HTTP_404_NOT_FOUND
+        )
+
+    game.delete()
+    return Response(
+        {"message": "Game deleted successfully"}, status=status.HTTP_204_NO_CONTENT
+    )
+
+
+"""
 Get a paginated list of games with optional filtering and sorting.
 
 Parameters:
     request: HTTP request object
         Query Parameters:
-            filterBy (optional): Filter games by various criteria using the following syntax:
-                - genre(Action,RPG): Filter by one or more genres
-                - platform(windows,mac,linux): Filter by one or more platforms 
-                - year(2021,2022,2023): Filter by one or more release years
+            filterBy (optional): Filter games using the following syntax:
+                - genre(Action,RPG): Filter by one or more genres (comma-separated)
+                - platform(windows,mac,linux): Filter by one or more platforms (comma-separated)
+                - year(2021,2022): Filter by one or more release years (comma-separated)
+                Multiple filters can be combined, e.g. "genre(Action)&platform(windows,mac)"
+            
             sortBy (optional): Sort results by one of:
                 - metacriticScore: Sort by Metacritic score
-                - price: Sort by price
-                - releaseDate: Sort by date of release
-            sortOrder (optional): Sort direction, either 'asc' or 'desc' (default: desc)
-            page (optional): Page number for pagination
-            pageSize (optional): Number of results per page (max 100)
+                - price: Sort by game price
+                - releaseDate: Sort by release date
+            
+            sortOrder (optional): Sort direction
+                - asc: Ascending order
+                - desc: Descending order (default)
+            
+            page (optional): Page number for pagination (default: 1)
+            pageSize (optional): Number of results per page (default: 100, max: 100)
 
 Returns:
     Response object with:
-        - count: Total number of results
-        - next: URL for next page (if exists)
-        - previous: URL for previous page (if exists) 
-        - results: List of games for current page
+        - count: Total number of matching results
+        - next: URL for next page of results (null if none)
+        - previous: URL for previous page (null if none)
+        - results: Array of games for current page
         - HTTP 200 if successful
 """
 
@@ -180,13 +327,13 @@ def get_games(request):
 
 
 """
-Get 5 recommended games based on similarity to a reference game by ID or name.
+Get recommended games based on similarity to a reference game.
 
 Parameters:
     request: HTTP request object
         Query Parameters:
             id (optional): The unique identifier of the reference game
-            name (optional): The name of the reference game to search for
+            name (optional): The name of the reference game (case-insensitive partial match)
 
 Returns:
     Response object with:
@@ -196,12 +343,14 @@ Returns:
         - HTTP 400 if neither id nor name provided
         - HTTP 404 if reference game not found
 
-Similarity scoring:
+Similarity scoring algorithm:
     Games are scored based on matching attributes with the following weights:
-    - Matching genres: 3 points each
-    - Matching tags: 2 points each  
-    - Matching categories: 1 point each
-    Only games with a score > 0 are included in results.
+    - Each matching genre: 3 points
+    - Each matching tag: 2 points
+    - Each matching category: 1 point
+    
+    Games are ranked by total score and only those with score > 0 are included.
+    The top 5 highest scoring games are returned as recommendations.
 """
 
 
@@ -227,21 +376,9 @@ def get_recommended_games(request):
                 raise Game.DoesNotExist
 
         # Get reference game attributes
-        ref_genres = (
-            set(g.strip() for g in reference_game.genres.split(","))
-            if reference_game.genres
-            else set()
-        )
-        ref_tags = (
-            set(t.strip() for t in reference_game.tags.split(","))
-            if reference_game.tags
-            else set()
-        )
-        ref_categories = (
-            set(c.strip() for c in reference_game.categories.split(","))
-            if reference_game.categories
-            else set()
-        )
+        ref_genres = set(g.genre for g in reference_game.genres.all())
+        ref_tags = set(t.tag for t in reference_game.tags.all())
+        ref_categories = set(c.category for c in reference_game.categories.all())
 
         # Get all other games
         all_other_games = Game.objects.exclude(pk=reference_game.pk)
@@ -252,25 +389,17 @@ def get_recommended_games(request):
             score = 0
 
             # Genre matching (weight: 3)
-            game_genres = (
-                set(g.strip() for g in game.genres.split(",")) if game.genres else set()
-            )
+            game_genres = set(g.genre for g in game.genres.all())
             matching_genres = len(ref_genres & game_genres)
             score += matching_genres * 3
 
             # Tag matching (weight: 2)
-            game_tags = (
-                set(t.strip() for t in game.tags.split(",")) if game.tags else set()
-            )
+            game_tags = set(t.tag for t in game.tags.all())
             matching_tags = len(ref_tags & game_tags)
             score += matching_tags * 2
 
             # Category matching (weight: 1)
-            game_categories = (
-                set(c.strip() for c in game.categories.split(","))
-                if game.categories
-                else set()
-            )
+            game_categories = set(c.category for c in game.categories.all())
             matching_categories = len(ref_categories & game_categories)
             score += matching_categories
 
@@ -296,170 +425,3 @@ def get_recommended_games(request):
         return Response(
             {"message": "Game does not exist"}, status=status.HTTP_404_NOT_FOUND
         )
-
-
-"""
-Create a new game.
-
-Request body:
-{
-    "name": "string (required)",
-    "release_date": "YYYY-MM-DD",
-    "estimated_owners": "string (max 50 chars)",
-    "peak_ccu": "integer",
-    "required_age": "integer",
-    "price": "decimal",
-    "dlc_count": "integer",
-    "about_the_game": "text",
-    "supported_languages": "text",
-    "full_audio_languages": "text",
-    "reviews": "text",
-    "header_image": "url",
-    "website": "url",
-    "support_url": "url",
-    "support_email": "email",
-    "windows": "boolean",
-    "mac": "boolean",
-    "linux": "boolean",
-    "metacritic_score": "integer",
-    "metacritic_url": "url",
-    "user_score": "integer",
-    "positive": "integer",
-    "negative": "integer",
-    "achievements": "integer",
-    "recommendations": "integer",
-    "notes": "text",
-    "average_playtime_forever": "integer",
-    "average_playtime_two_weeks": "integer",
-    "median_playtime_forever": "integer",
-    "median_playtime_two_weeks": "integer",
-    "developers": "text",
-    "publishers": "text",
-    "categories": "text",
-    "genres": "text",
-    "tags": "text",
-    "screenshots": "text",
-    "movies": "text"
-}
-
-Returns:
-    - HTTP 201: Successfully created game object
-        Response includes the complete game object with all fields
-    - HTTP 400: Invalid request data
-        Response includes validation errors
-"""
-
-
-@create_game_schema()
-@api_view(["POST"])
-def create_game(request):
-    serializer = GameSerializer(data=request.data)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response(serializer.data, status=status.HTTP_201_CREATED)
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-"""
-Update an existing game by ID.
-
-Parameters:
-    request: HTTP request object
-        Query Parameters:
-            id (optional): The unique identifier of the game
-            name (optional): The name of the game to search for
-
-Request body:
-{
-    "name": "string",  
-    "genres": "string",
-    ...other game fields
-}
-
-Returns:
-- 200: Successfully updated game
-- 400: Invalid request data
-"""
-
-
-@update_game_schema()
-@api_view(["PATCH"])
-def update_game(request):
-    pk = request.query_params.get("id")
-    name = request.query_params.get("name")
-
-    if not pk and not name:
-        return Response(
-            {"message": "Please provide either id or name parameter"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    try:
-        if pk:
-            game = Game.objects.get(pk=pk)
-        else:
-            game = Game.objects.filter(name__icontains=name).first()
-            if not game:
-                raise Game.DoesNotExist
-    except Game.DoesNotExist:
-        return Response(
-            {"message": "Game does not exist"}, status=status.HTTP_404_NOT_FOUND
-        )
-
-    serializer = GameSerializer(game, data=request.data, partial=True)
-
-    if serializer.is_valid():
-        serializer.save()
-        return Response(
-            {"message": "Game updated successfully", "game": serializer.data},
-            status=status.HTTP_200_OK,
-        )
-
-    return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
-
-
-"""
-Delete a game by ID.
-
-Parameters:
-    request: HTTP request object
-        Query Parameters:
-            id (optional): The unique identifier of the game
-            name (optional): The name of the game to search for
-
-Returns:
-- 204: Game successfully deleted
-- 404: Game not found
-"""
-
-
-@delete_game_schema()
-@api_view(["DELETE"])
-def delete_game(request):
-    pk = request.query_params.get("id")
-    name = request.query_params.get("name")
-
-    if not pk and not name:
-        return Response(
-            {"message": "Please provide either id or name parameter"},
-            status=status.HTTP_400_BAD_REQUEST,
-        )
-
-    try:
-        if pk:
-            game = Game.objects.get(pk=pk)
-        else:
-            game = Game.objects.filter(name__icontains=name).first()
-            if not game:
-                raise Game.DoesNotExist
-    except Game.DoesNotExist:
-        return Response(
-            {"message": "Game does not exist"}, status=status.HTTP_404_NOT_FOUND
-        )
-
-    game.delete()
-    return Response(
-        {"message": "Game deleted successfully"}, status=status.HTTP_204_NO_CONTENT
-    )
