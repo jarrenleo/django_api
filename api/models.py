@@ -97,7 +97,7 @@ class Game(models.Model):
         null=True, validators=[MinValueValidator(0)]
     )
     required_age = models.IntegerField(
-        default=0, validators=[MinValueValidator(0), MaxValueValidator(100)]
+        default=0, validators=[MinValueValidator(0), MaxValueValidator(21)]
     )
     price = models.DecimalField(
         max_digits=10,

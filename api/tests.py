@@ -46,13 +46,6 @@ class GameAPITests(TestCase):
             price=Decimal("39.99"),
         )
 
-    """Test retrieving list of all games."""
-
-    def test_get_games_list(self):
-        response = self.client.get(reverse("get_games"))
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["results"]), 2)
-
     """Test retrieving a single game by ID or name."""
 
     def test_get_single_game(self):
@@ -73,48 +66,6 @@ class GameAPITests(TestCase):
         # Test missing parameters
         response = self.client.get(reverse("get_game"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    """Test retrieving recommended games based on a reference game."""
-
-    def test_get_recommended_games(self):
-        # Test recommendations by ID
-        url = f"{reverse('get_recommended_games')}?id={self.game1.id}"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["reference_game"]["name"], "Test Game 1")
-        self.assertIn("recommended_games", response.data)
-
-        # Test recommendations by name
-        url = f"{reverse('get_recommended_games')}?name=Test Game 1"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["reference_game"]["name"], "Test Game 1")
-
-        # Test non-existent game
-        url = f"{reverse('get_recommended_games')}?id=999"
-        response = self.client.get(url)
-        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
-
-        # Test missing parameters
-        response = self.client.get(reverse("get_recommended_games"))
-        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
-
-    """Test filtering games by specific criteria."""
-
-    def test_filtered_games(self):
-        response = self.client.get(reverse("get_games"), {"filterBy": "year(2020)"})
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(len(response.data["results"]), 1)
-        self.assertEqual(response.data["results"][0]["name"], "Test Game 1")
-
-    """Test sorting games by specific fields."""
-
-    def test_sorted_games(self):
-        response = self.client.get(
-            reverse("get_games"), {"sortBy": "price", "sortOrder": "desc"}
-        )
-        self.assertEqual(response.status_code, status.HTTP_200_OK)
-        self.assertEqual(response.data["results"][0]["name"], "Test Game 2")
 
     """Test creating a new game with valid data."""
 
@@ -213,4 +164,53 @@ class GameAPITests(TestCase):
 
         # Test missing parameters
         response = self.client.delete(reverse("delete_game"))
+        self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)
+
+    """Test retrieving list of all games."""
+
+    def test_get_games_list(self):
+        response = self.client.get(reverse("get_games"))
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 2)
+
+    """Test filtering games by specific criteria."""
+
+    def test_filtered_games(self):
+        response = self.client.get(reverse("get_games"), {"filterBy": "year(2020)"})
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(len(response.data["results"]), 1)
+        self.assertEqual(response.data["results"][0]["name"], "Test Game 1")
+
+    """Test sorting games by specific fields."""
+
+    def test_sorted_games(self):
+        response = self.client.get(
+            reverse("get_games"), {"sortBy": "price", "sortOrder": "desc"}
+        )
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["results"][0]["name"], "Test Game 2")
+
+    """Test retrieving recommended games based on a reference game."""
+
+    def test_get_recommended_games(self):
+        # Test recommendations by ID
+        url = f"{reverse('get_recommended_games')}?id={self.game1.id}"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["reference_game"]["name"], "Test Game 1")
+        self.assertIn("recommended_games", response.data)
+
+        # Test recommendations by name
+        url = f"{reverse('get_recommended_games')}?name=Test Game 1"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        self.assertEqual(response.data["reference_game"]["name"], "Test Game 1")
+
+        # Test non-existent game
+        url = f"{reverse('get_recommended_games')}?id=999"
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, status.HTTP_404_NOT_FOUND)
+
+        # Test missing parameters
+        response = self.client.get(reverse("get_recommended_games"))
         self.assertEqual(response.status_code, status.HTTP_400_BAD_REQUEST)

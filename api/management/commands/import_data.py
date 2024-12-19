@@ -49,6 +49,9 @@ class Command(BaseCommand):
             return 0
 
     def handle(self, *args, **kwargs):
+        games_to_create = []
+        games_many_to_many_data = []
+
         with open("data/data.csv", "r", encoding="utf-8") as file:
             reader = csv.DictReader(file)
 
@@ -112,8 +115,8 @@ class Command(BaseCommand):
                     tag_object, _ = Tag.objects.get_or_create(tag=tag.strip())
                     tag_objects.append(tag_object)
 
-                # Create the game
-                game = Game.objects.create(
+                # Prepare game data
+                game = Game(
                     name=row["Name"],
                     release_date=self.clean_date(row["Release date"]),
                     estimated_owners=self.extract_estimated_owners(
@@ -139,14 +142,31 @@ class Command(BaseCommand):
                     average_playtime=row["Average playtime forever"],
                     median_playtime=row["Median playtime forever"],
                 )
+                games_to_create.append(game)
 
-                # Add many-to-many relationships
-                game.supported_languages.set(supported_languages_objects)
-                game.full_audio_languages.set(full_audio_languages_objects)
-                game.developers.set(developer_objects)
-                game.publishers.set(publisher_objects)
-                game.categories.set(category_objects)
-                game.genres.set(genre_objects)
-                game.tags.set(tag_objects)
+                # Store ManyToMany relationships for later
+                games_many_to_many_data.append(
+                    {
+                        "supported_languages": supported_languages_objects,
+                        "full_audio_languages": full_audio_languages_objects,
+                        "developers": developer_objects,
+                        "publishers": publisher_objects,
+                        "categories": category_objects,
+                        "genres": genre_objects,
+                        "tags": tag_objects,
+                    }
+                )
 
+            # Bulk create all games
+            created_games = Game.objects.bulk_create(games_to_create)
+
+            # Set ManyToMany relationships for created games
+            for game, m2m_data in zip(created_games, games_many_to_many_data):
+                game.supported_languages.set(m2m_data["supported_languages"])
+                game.full_audio_languages.set(m2m_data["full_audio_languages"])
+                game.developers.set(m2m_data["developers"])
+                game.publishers.set(m2m_data["publishers"])
+                game.categories.set(m2m_data["categories"])
+                game.genres.set(m2m_data["genres"])
+                game.tags.set(m2m_data["tags"])
                 self.stdout.write(f"Imported {game.name}")

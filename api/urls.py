@@ -29,12 +29,6 @@ urlpatterns = [
         "api/game/", get_game, name="get_game"
     ),  # GET - Retrieve single game by ID or name
     path(
-        "api/games/", get_games, name="get_games"
-    ),  # GET - List games with filtering and pagination
-    path(
-        "api/games/recommend/", get_recommended_games, name="get_recommended_games"
-    ),  # GET - Get personalized game recommendations
-    path(
         "api/game/create/", create_game, name="create_game"
     ),  # POST - Create new game entry
     path(
@@ -43,6 +37,12 @@ urlpatterns = [
     path(
         "api/game/delete/", delete_game, name="delete_game"
     ),  # DELETE - Remove game entry
+    path(
+        "api/games/", get_games, name="get_games"
+    ),  # GET - List games with filtering and pagination
+    path(
+        "api/games/recommend/", get_recommended_games, name="get_recommended_games"
+    ),  # GET - Get personalized game recommendations
     # API Documentation endpoints
     path(
         "swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"
