@@ -16,7 +16,7 @@ schema_view = get_schema_view(
     openapi.Info(
         title="Steam Games API",
         default_version="v1",
-        description="REST API for managing Steam games data including CRUD operations and recommendations",
+        description="Python version: 3.13.0\nDjango version: 5.1.4\nPackages used: asgiref, djangorestframework, drf-yasg, gunicorn, inflection, packaging, python-dotenv, pytz, PyYAML, sqlparse, tzdata, uritemplate, whitenoise\nUsername: jaleo\nPassword: 1234567890",
     ),
     public=True,
     permission_classes=(permissions.AllowAny,),
@@ -42,7 +42,7 @@ urlpatterns = [
     ),  # GET - List games with filtering and pagination
     path(
         "api/games/recommend/", get_recommended_games, name="get_recommended_games"
-    ),  # GET - Get personalized game recommendations
+    ),  # GET - Get recommended games
     # API Documentation endpoints
     path(
         "swagger<format>/", schema_view.without_ui(cache_timeout=0), name="schema-json"

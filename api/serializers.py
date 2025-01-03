@@ -13,7 +13,7 @@ from .models import (
 """
 Serializer for the Game model that handles conversion between Game instances and JSON.
 
-This serializer includes all fields from the Game model and handles related fields using
+This serializer includes all fields from the Game model and handles ManyToMany fields using
 SlugRelatedFields for better readability in the API responses.
 
 Attributes:
@@ -28,7 +28,6 @@ Attributes:
 
 
 class GameSerializer(serializers.ModelSerializer):
-    # Define related fields using SlugRelatedField for readable string representation
     supported_languages = serializers.SlugRelatedField(
         many=True,
         slug_field="supported_language",
